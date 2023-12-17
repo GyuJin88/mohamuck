@@ -92,6 +92,7 @@
                 <th>작성자</th>
                 <th>내용</th>
                 <th>등록일</th>
+                <th></th>
               </tr>
               </thead>
               <tbody>
@@ -99,6 +100,13 @@
                 <td th:text="${data.cwriter}">강규진</td>
                 <td th:text="${data.cbody}">너무 맛있어요</td>
                 <td th:text="${#temporals.format(data.regDate, 'yyyy-MM-dd')}">2023-11-13</td>
+                <td>
+                  <button th:if="${data.cwriter == session.mnickname or recipeDTO.rwriter == session.mnickname}" class="text-end" type="button" th:onclick="|location.href='@{/comment/remove(no=${recipeDTO.rid}, id=${data.cid})}'|">삭제</button>
+                </td>
+
+
+                <!--<td><button class="text-end" type="button" th:onclick="|location.href='@{/comment/remove(no=${recipeDTO.rid}, id=${data.cid})}'|">삭제</button> </td>-->
+
               </tr>
               </tbody>
             </table>

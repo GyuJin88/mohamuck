@@ -14,4 +14,5 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Integer>
 
     @Query(value = "delete from comment where recipeid=:rid",nativeQuery = true)
     void deleteByRecipeId(Integer rid);
+
 }

@@ -23,8 +23,8 @@ public class CommentService {
     private final ModelMapper modelMapper = new ModelMapper();
 
     //댓글 삭제
-    public void remove(Integer rid) throws Exception {
-        commentRepository.deleteById(rid);
+    public void remove(Integer id) throws Exception {
+        commentRepository.deleteById(id);
     }
 
     //댓글 수정

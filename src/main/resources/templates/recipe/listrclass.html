@@ -23,6 +23,138 @@
     <!-- 리스트 카드형식 -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Figtree:wght@300;600&amp;display=swap">
     <link rel="stylesheet" href="./style.css">
+    <style>
+        @media (max-width: 991px) {
+            .card.col-md-4 {
+                flex: 0 0 100%; /* 작은 화면에서 100%로 설정하여 1개의 카드만 표시 */
+                max-width: 100%; /* 작은 화면에서 100%로 설정하여 1개의 카드만 표시 */
+            }
+            .card.col-md-4 .card-image img {
+                min-width: auto;
+                width: 100%;
+                height: auto;
+                max-height: 200px;
+            }
+        }
+        @import url("https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800;900&display=swap");
+        *,
+        *:after,
+        *:before {
+            box-sizing: border-box;
+        }
+
+
+
+        img {
+            max-width: 100%;
+            display: block;
+        }
+
+        .card-list {
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .card {
+            background-color: #fff;
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 20px 50px 0 rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            padding: 1.25rem;
+            position: relative;
+            transition: 0.15s ease-in;
+        }
+        .card:hover, .card:focus-within {
+            box-shadow: 0 0 0 2px #16c79a, 0 10px 60px 0 rgba(0, 0, 0, 0.1);
+            transform: translatey(-5px);
+        }
+
+        .card-image {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .card-header a {
+            font-weight: 600;
+            font-size: 1.375rem;
+            line-height: 1.25;
+            padding-right: 1rem;
+            text-decoration: none;
+            color: inherit;
+            will-change: transform;
+        }
+        .card-header a:after {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .icon-button {
+            border: 0;
+            background-color: #fff;
+            border-radius: 50%;
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+            font-size: 1.25rem;
+            transition: 0.25s ease;
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.05), 0 3px 8px 0 rgba(0, 0, 0, 0.15);
+            z-index: 1;
+            cursor: pointer;
+            color: #565656;
+        }
+        .icon-button svg {
+            width: 1em;
+            height: 1em;
+        }
+        .icon-button:hover, .icon-button:focus {
+            background-color: #ec4646;
+            color: #fff;
+        }
+
+        .card-footer {
+            margin-top: 1.25rem;
+            border-top: 1px solid #ddd;
+            padding-top: 1.25rem;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .card-meta {
+            display: flex;
+            align-items: center;
+            color: #787878;
+        }
+        .card-meta:first-child:after {
+            display: block;
+            content: "";
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background-color: currentcolor;
+            margin-left: 0.75rem;
+            margin-right: 0.75rem;
+        }
+        .card-meta svg {
+            flex-shrink: 0;
+            width: 1em;
+            height: 1em;
+            margin-right: 0.25em;
+        }
+    </style>
 </head>
 <body>
 <div layout:fragment="content">
@@ -109,24 +241,40 @@
                         </div>
                     </div>
                 </form>
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th></th>
-                        <th>메뉴명</th>
-                        <th>작성자</th>
-                        <th>조회수</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr style="cursor: pointer" th:onclick="|location.href='@{/recipe/detail(rid=${data.rid})}'|" th:if="recipeDTOS" th:each="data:${recipeDTOS}">
-                        <td> <img th:src="${data.rimg}" width="150" height="100"> </td>
-                        <td th:text="${data.rmenu}">김치찌개</td>
-                        <td th:text="${data.rwriter}">작성자1</td>
-                        <td th:text="${data.rviewcnt}">10</td>
-                    </tr>
-                    </tbody>
-                </table>
+                <!-- 카드 형식 -->
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3" th:if="recipeDTO"  th:each="data:${recipeDTOS}">
+                        <article class="card" th:onclick="|location.href='@{/recipe/detail(rid=${data.rid})}'|">
+                            <figure class="card-image">
+                                <img th:src="${data.rimg}" class="img-fluid" style="min-width: 100%; height: 200px;" alt="An orange painted blue, cut in half laying on a blue background" />
+                                <!--<img th:src="${data.rimg}" style="max-width: 100%; height: auto;" alt="An orange painted blue, cut in half laying on a blue background" />-->
+                                <!--<img th:src="${data.rimg}" style="width: 200px;height: 150px" alt="An orange painted blue, cut in half laying on a blue background" />-->
+                            </figure>
+                            <div class="card-header">
+                                <a th:text="${data.rmenu}">김치찌개</a>
+                            </div>
+                            <div class="card-footer">
+                                <div class="card-meta card-meta--views">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" display="block" id="EyeOpen">
+                                        <path d="M21.257 10.962c.474.62.474 1.457 0 2.076C19.764 14.987 16.182 19 12 19c-4.182 0-7.764-4.013-9.257-5.962a1.692 1.692 0 0 1 0-2.076C4.236 9.013 7.818 5 12 5c4.182 0 7.764 4.013 9.257 5.962z" />
+                                        <circle cx="12" cy="12" r="3" />
+                                    </svg>
+                                    [[${data.rviewcnt}]]
+                                </div>
+                                <div class="card-meta card-meta--date">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" display="block" id="Calendar">
+                                        <rect x="2" y="4" width="20" height="18" rx="4" />
+                                        <path d="M8 2v4" />
+                                        <path d="M16 2v4" />
+                                        <path d="M2 10h20" />
+                                    </svg>
+                                    <span th:text="${#temporals.format(data.regDate,'yyyy-MM-dd')}"></span>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                </div> <!-- 카드 형식 끝 -->
+
                 <div class="text-lg-end">
                     <button type="button" class="btn text-white" style="background-color: #E67E22" onclick="location.href='/recipe/insert'">글쓰기</button>
                 </div>

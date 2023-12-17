@@ -1,0 +1,64 @@
+<!-- 프로젝트명 : enlaco
+     파일명    : 회원가입 페이지 member/insert.html
+     작성자    : 강규진
+     작성일    : 2023-11-10 19:18
+     TODO     :
+     FixMe    :
+     -->
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}">
+<head>
+    <title>엔라꼬</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+    <!--[if IE 7]-->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome-ie7.min.css">
+    <!--[endif]-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+
+<div layout:fragment="content">
+    <div class="row mt-3">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <h2>내 정보</h2>
+            <form th:action="@{/member/modify}" method="post" th:object="${memberDTO}">
+                <input type="hidden" name="mid" th:value="${mid}">
+
+                <div class="input-group mb-3 mt-3 ">
+                    <label for="memail" class="input-group-text w-25">이메일</label>
+                    <input type="email" class="form-control" th:field="*{memail}" id="memail" name="memail" readonly>
+                </div>
+
+                <div class="input-group mb-3 mt-3">
+                    <label for="mnick" class="input-group-text w-25">닉네임</label>
+                    <input type="text" class="form-control" th:field="*{mnick}" id="mnick" name="mnick" required>
+                </div>
+                <div class="input-group mb-3 mt-3">
+                    <label for="mphone" class="input-group-text w-25">전화번호</label>
+                    <input type="tel" class="form-control" th:field="*{mphone}" id="mphone" name="mphone" required>
+                </div>
+                <div class="input-group mb-3 mt-3">
+                    <label for="mbirth" class="input-group-text w-25">생년월일</label>
+                    <input type="date" class="form-control" th:field="*{mbirth}" id="mbirth" name="mbirth" required>
+                </div>
+                <div class="text-lg-end">
+                    <button type="reset" class="btn btn-outline-dark fw-bold" >취소</button>
+                    <button type="submit" class="btn text-white fw-bold" id="btn">수정</button>
+                </div>
+            </form>
+
+        </div>
+        <div class="col-md-4"></div>
+
+    </div>
+
+</div>
+</body>
+</html>

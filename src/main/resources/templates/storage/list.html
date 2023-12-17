@@ -105,6 +105,10 @@
     </div>
     <div id="flex" >
         <div class="image-container" th:each="data:${storageDTOS}">
+
+            <!--<img th:src="${data.simg != null ? data.simg : '/image/이미지 없음.png'}" width="200" height="200"
+                 th:onclick="|location.href='@{/storage/modify(sid=${data.sid})}'|" style="cursor: pointer">-->
+
             <img th:if="${data.simg != null}" th:src="${data.simg}" width="200" height="200" th:onclick="|location.href='@{/storage/modify(sid=${data.sid})}'|"
                  style="cursor: pointer" onerror="this.src='/image/이미지 없음.png'">
             <img th:unless="${data.simg != null}" src="/image/이미지 없음.png" width="200" height="200" th:onclick="|location.href='@{/storage/modify(sid=${data.sid})}'|"

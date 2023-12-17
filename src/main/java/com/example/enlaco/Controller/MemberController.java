@@ -1,7 +1,10 @@
 package com.example.enlaco.Controller;
 
+import com.example.enlaco.DTO.CommentDTO;
 import com.example.enlaco.DTO.MemberDTO;
 import com.example.enlaco.DTO.RecipeDTO;
+import com.example.enlaco.Entity.MemberEntity;
+import com.example.enlaco.Service.CommentService;
 import com.example.enlaco.Service.MemberService;
 import com.example.enlaco.Service.RecipeService;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +30,7 @@ import java.util.List;
 public class MemberController {
     private final MemberService memberService;
     private final RecipeService recipeService;
+    private final CommentService commentService;
 
     //S3 이미지 정보
     @Value("${cloud.aws.s3.bucket}")
@@ -62,6 +66,30 @@ public class MemberController {
         }
         return "redirect:/";
     }
+    //수정창
+    @GetMapping("/modify")
+    public String modifyForm(Principal principal, Model model) throws Exception {
+        String memail = principal.getName(); // 현재 로그인한 사용자의 이메일
+        int mid = memberService.findByMemail1(memail); // 이메일로 회원 정보 조회
+        model.addAttribute("mid", mid);
+
+        MemberDTO memberDTO = memberService.read(mid);
+
+        model.addAttribute("memberDTO", memberDTO);
+
+        return "/member/modify";
+    }
+
+
+    @PostMapping("/modify")
+    public String modfiyProc(MemberDTO memberDTO, Model model) throws Exception {
+        String memail = memberDTO.getMemail();
+
+        //model.addAttribute("role", c)
+        memberService.modifyMember(memberDTO, memail);
+        return "redirect:/member/mypage";
+    }
+
 
     @GetMapping("/login")
     public String login() throws Exception {
@@ -120,9 +148,11 @@ public class MemberController {
             int rid, Model model) throws Exception {
         int mid = memberService.findByMemail1(principal.getName());
         RecipeDTO recipeDTO = recipeService.detail(rid);
+        List<CommentDTO> commentDTOS = commentService.list(rid);
 
         model.addAttribute("mid", mid);
         model.addAttribute("recipeDTO", recipeDTO);
+        model.addAttribute("commentDTOS", commentDTOS);
 
         //s3 이미지 전달
         model.addAttribute("bucket", bucket);

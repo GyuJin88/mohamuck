@@ -138,7 +138,7 @@ public class RecipeService {
     //전체조회
     public Page<RecipeDTO> list(String keyword, Pageable pageable) throws Exception {
         int curPage = pageable.getPageNumber()-1;
-        int pageLimit = 9;
+        int pageLimit = 1;
 
         Pageable newPage = PageRequest.of(curPage, pageLimit,
                 Sort.by(Sort.Direction.DESC,"rviewcnt"));
@@ -173,7 +173,7 @@ public class RecipeService {
     //자세히 버튼 조회
     public Page<RecipeDTO> listClass(String rtime, String rclass, Pageable pageable) throws Exception {
         int curPage = pageable.getPageNumber()-1;
-        int pageLimit = 5;
+        int pageLimit = 9;
 
         Pageable newPage = PageRequest.of(curPage, pageLimit,
                 Sort.by(Sort.Direction.DESC,"rviewcnt"));

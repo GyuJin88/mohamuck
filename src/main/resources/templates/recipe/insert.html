@@ -41,7 +41,8 @@
                             <label for="rmenu" class="form-label fw-bold">메뉴명<br><font size="2" color="red">(필수 입력)</font></label>
                         </div>
                         <div class="col-9 mt-3">
-                            <input type="text" class="form-control" id="rmenu" placeholder="메뉴명을 입력해주세요." name="rmenu" th:field="*{rmenu}" required>
+                            <input type="text" class="form-control" id="rmenu" placeholder="메뉴명을 입력해주세요." name="rmenu" th:field="*{rmenu}">
+                            <p class="text-danger" th:if="${#fields.hasErrors('rmenu')}" th:errors="*{rmenu}"> </p>
                         </div>
                     </div>  <!--메뉴명 입력 줄 끝-->
                     <div class="row"> <!--대표사진 입력 줄-->

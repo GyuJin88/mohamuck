@@ -78,6 +78,37 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="card">
+                    <!-- 댓글 목록 -->
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>작성자</th>
+                                <th>내용</th>
+                                <th>등록일</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="data:${commentDTOS}">
+                                <td th:text="${data.cwriter}">강규진</td>
+                                <td th:text="${data.cbody}">너무 맛있어요</td>
+                                <td th:text="${#temporals.format(data.regDate, 'yyyy-MM-dd')}">2023-11-13</td>
+                                <td>
+                                    <button th:if="${data.cwriter == session.mnickname or recipeDTO.rwriter == session.mnickname}" class="text-end" type="button" th:onclick="|location.href='@{/comment/remove(no=${recipeDTO.rid}, id=${data.cid})}'|">삭제</button>
+                                </td>
+
+
+                                <!--<td><button class="text-end" type="button" th:onclick="|location.href='@{/comment/remove(no=${recipeDTO.rid}, id=${data.cid})}'|">삭제</button> </td>-->
+
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- 댓글 목록 끝 -->
+                </div>
                 <br>
                 <div class="text-lg-end">
                     <button type="button" class="btn fw-bold" id="btn" style="color: white" th:onclick="|location.href='/recipe/modify?rid=${recipeDTO.rid}&mid=${mid}'|">수정</button>

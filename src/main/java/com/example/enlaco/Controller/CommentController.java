@@ -27,11 +27,19 @@ public class CommentController {
         return "redirect:/recipe/detail";
     }
 
-    @GetMapping("/comment/remove")
-    public String removeProc(int rid, int cid, RedirectAttributes redirectAttributes) throws Exception {
-        commentService.remove(cid);
+    @PostMapping("/comment/modify")
+    public String modifyProc() throws Exception {
 
-        redirectAttributes.addAttribute("id", rid);
+
+
+        return "redirect:/recipe/detail";
+    }
+
+    @GetMapping("/comment/remove")
+    public String removeProc(int no, int id, RedirectAttributes redirectAttributes) throws Exception {
+        commentService.remove(id);
+
+        redirectAttributes.addAttribute("rid", no);
         return "redirect:/recipe/detail";
     }
 }

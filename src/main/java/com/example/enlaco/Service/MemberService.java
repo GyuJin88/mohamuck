@@ -83,6 +83,32 @@ public class MemberService implements UserDetailsService {
         memberRepository.save(memberEntity);
     }
 
+    //회원 정보 조회
+    public MemberDTO read(Integer mid) throws Exception {
+        Optional<MemberEntity> memberEntity = memberRepository.findById(mid);
+
+        MemberDTO memberDTO = modelMapper.map(memberEntity, MemberDTO.class);
+
+        return memberDTO;
+    }
+
+    //회원 수정
+    public void modifyMember(MemberDTO memberDTO, String memail) throws Exception {
+        //int mid = memberRepository.findByMemail(memail).getMid();
+        Optional<MemberEntity> data = memberRepository.findById(memberDTO.getMid());
+        MemberEntity member = data.orElseThrow();
+
+        MemberEntity update = modelMapper.map(memberDTO, MemberEntity.class);
+        update.setMid(memberDTO.getMid());
+        //update.setMemail(memberDTO.getMemail());
+        //update.setMpwd(memberDTO.getMpwd());
+        update.setMnick(memberDTO.getMnick());
+        update.setMphone(memberDTO.getMphone());
+        update.setMbirth(memberDTO.getMbirth());
+
+        memberRepository.save(update);
+    }
+
     //이메일 중복 체크
     private void validateDuplicateMember(MemberEntity memberEntity) {
         //데이터베이스에서 조회
