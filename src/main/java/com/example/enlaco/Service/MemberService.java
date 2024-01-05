@@ -7,11 +7,16 @@ import com.example.enlaco.DTO.StorageDTO;
 import com.example.enlaco.Entity.MemberEntity;
 import com.example.enlaco.Entity.RecipeEntity;
 import com.example.enlaco.Entity.StorageEntity;
+import com.example.enlaco.Repository.CommentRepository;
 import com.example.enlaco.Repository.MemberRepository;
 import com.example.enlaco.Repository.RecipeRepository;
 import com.example.enlaco.Repository.StorageRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -31,6 +36,7 @@ import java.util.Optional;
 public class MemberService implements UserDetailsService {
     private final MemberRepository memberRepository;
     private final RecipeRepository recipeRepository;
+    private final CommentRepository commentRepository;
     private final StorageRepository storageRepository;
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper = new ModelMapper();
@@ -195,4 +201,30 @@ public class MemberService implements UserDetailsService {
 
         return nickname;
     }
+
+    public Page<MemberDTO> managerList(Pageable pageable) throws Exception {
+        int curPage = pageable.getPageNumber()-1;
+        int pageLimit = 20;
+
+        Pageable newPage = PageRequest.of(curPage, pageLimit,
+                Sort.by(Sort.Direction.DESC, "regDate"));
+
+        Page<MemberEntity> memberEntities = memberRepository.findAll(newPage);
+
+        Page<MemberDTO> memberDTOS = memberEntities.map(data -> MemberDTO.builder()
+                .mid(data.getMid())
+                .memail(data.getMemail())
+                .mnick(data.getMnick())
+                .mpwd(data.getMpwd())
+                .mphone(data.getMphone())
+                .mbirth(data.getMbirth())
+                .regDate(data.getRegDate())
+                .build());
+        return memberDTOS;
+    }
+
+    public void remove(int mid) throws Exception {
+        memberRepository.deleteById(mid);
+    }
+
 }
