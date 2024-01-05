@@ -154,67 +154,64 @@
                     <table class="table table-striped">
                         <thead>
                         <tr>
-                            <th>Firstname</th>
-                            <th>Lastname</th>
-                            <th>Email</th>
+                            <th>닉네임</th>
+                            <th>이메일</th>
+                            <th>전화번호</th>
+                            <th>생년월일</th>
+                            <th>등록일</th>
+                            <th></th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>john@example.com</td>
-                        </tr>
-                        <tr>
-                            <td>Mary</td>
-                            <td>Moe</td>
-                            <td>mary@example.com</td>
-                        </tr>
-                        <tr>
-                            <td>July</td>
-                            <td>Dooley</td>
-                            <td>july@example.com</td>
+                        <tr th:each="data:${memberDTOS}">
+                            <td th:text="${data.mnick}">John</td>
+                            <td th:text="${data.memail}">Doe</td>
+                            <td th:text="${data.mphone}">john@example.com</td>
+                            <td th:text="${data.mbirth}">john@example.com</td>
+                            <td th:text="${#temporals.format(data.regDate,'yyyy-MM-dd')}">john@example.com</td>
+                            <td><button type="button" class="btn btn-outline-dark fw-bold" th:onclick="|location.href='/manager/mremove?mid=${data.mid}'|">삭제</button></td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
-            <div id="recipeTable" class="table-content hidden" th:each="data:${recipeDTOS}">
+            <div id="recipeTable" class="table-content hidden" >
                 <div class="container mt-3">
                     <h2>레시피 관리</h2>
-                    <table class="table table-striped">
+                    <table class="table table-striped" >
                         <thead>
                         <tr>
                             <th></th>
                             <th>메뉴명</th>
                             <th>작성자</th>
                             <th>작성일</th>
-                            <th>수정 / 삭제</th>
+
                         </tr>
                         </thead>
                         <tbody>
-                        <tr>
+                        <tr th:each="data:${recipeDTOS}" th:onclick="|location.href='@{/manager/detail(rid=${data.rid})}'|">
                             <th> <img th:src="${data.rimg}" class="img-fluid" style="min-width: 100%; height: 200px;" alt="An orange painted blue, cut in half laying on a blue background" /></th>
                             <th th:text="${data.rmenu}">메뉴명</th>
                             <th th:text="${data.rwriter}">작성자</th>
-                            <th th:text="${data.regDate}">작성일</th>
-                            <th>수정/삭제</th>
+                            <th th:text="${#temporals.format(data.regDate,'yyyy-MM-dd')}">작성일</th>
                         </tr>
 
                         </tbody>
+
                     </table>
+
                 </div>
                 <ul class="pagination justify-content-center" style="margin:20px 0">
                     <li class="page-item" th:if="${startPage != 1}">
-                        <a class="page-link" th:href="@{/recipe/list(page=1,keyword=${keyword})}">first</a>
+                        <a class="page-link" th:href="@{/manager/list(page=1)}">first</a>
                     </li>
                     <li class="page-item" th:if="${curPage != 1}">
-                        <a class="page-link" th:href="@{/recipe/list(page=${prevPage},keyword=${keyword})}">prev</a>
+                        <a class="page-link" th:href="@{/manager/list(page=${prevPage})}">prev</a>
                     </li>
 
                     <span th:each="page:${#numbers.sequence(startPage, endPage)}">
                         <li class="page-item" th:if="${page != curPage}">  <!--현재 페이지가 아니면-->
-                            <a class="page-link" th:href="@{/recipe/list(page=${page},keyword=${keyword})}">[[${page}]]</a>
+                            <a class="page-link" th:href="@{/manager/list(page=${page})}">[[${page}]]</a>
                         </li>
                         <li class="page-item active" th:if="${page == curPage}">  <!--현재 페이지 이면-->
                             <a class="page-link" style="background-color: #f7931e" href="#">[[${page}]]</a>
@@ -222,10 +219,10 @@
                     </span>
 
                     <li class="page-item" th:if="${curPage != lastPage}">
-                        <a class="page-link" th:href="@{/recipe/list(page=${nextPage},keyword=${keyword})}">next</a>
+                        <a class="page-link" th:href="@{/manager/list(page=${nextPage})}">next</a>
                     </li>
                     <li class="page-item" th:if="${endPage != lastPage}">
-                        <a class="page-link" th:href="@{/recipe/list(page=${lastPage},keyword=${keyword})}">last</a>
+                        <a class="page-link" th:href="@{/manager/list(page=${lastPage})}">last</a>
                     </li>
                 </ul>
 

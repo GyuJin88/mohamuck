@@ -26,6 +26,7 @@ dependencies {
     //JPA
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     //보안인증(디자인 작업 시에는 생략 후 끝나면 다시 적용)
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     //타임리프에 보안 적용
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
@@ -35,6 +36,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     //웹개발
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    //타임리프에 보안인증 적용
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
     //룸북
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

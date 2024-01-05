@@ -1,4 +1,4 @@
-package com.example.enlaco.Config;
+package com.example.enlaco.Config.oauth;
 
 import com.example.enlaco.Service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +24,10 @@ public class CustomLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
                                         Authentication authentication) throws IOException, ServletException {
         HttpSession session = request.getSession();
 
-        if (session != null) {
+        if (session != null) { //섹션이 존재하면 로그인한 이메일을 등록
             String email = authentication.getName();
-            userService.toSession(session,email);
+            String oauthType = "";
+            userService.userIdToSession(session,email, oauthType);
         }
 
         super.setDefaultTargetUrl("/");

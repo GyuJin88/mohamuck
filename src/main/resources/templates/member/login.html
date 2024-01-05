@@ -41,6 +41,14 @@
                     <button type="submit" class="btn text-white fw-bold" style="width: 100px;" id="btn1">로그인</button>
                 </div>
             </form>
+            <div class="center">
+                <a class="btn btn-google" th:href="@{/oauth2/authorization/google}">Google Login</a>
+                <a class="btn btn-naver" th:href="@{/oauth2/authorization/naver}">Naver Login</a>
+                <a class="btn btn-kakao" th:href="@{/oauth2/authorization/kakao}">Kakao Login</a>
+            </div>
+            <!-- 자동 로그인 체크박스 -->
+            <input type="checkbox" id="autoLogin" name="autoLogin">
+            <label for="autoLogin">자동 로그인</label><br>
         </div>
     </div>
     <div class="col-2 col-xl-4"></div>
