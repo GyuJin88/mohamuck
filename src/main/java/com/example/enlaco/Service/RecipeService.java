@@ -41,7 +41,7 @@ public class RecipeService {
     //파일 저장을 위한 클래스
     private final S3Uploader s3Uploader;
 
-    //삭제
+    //삭제0
     public void remove(int rid) throws Exception {
 
         //물리적 위치에 저장된 이미지를 삭제
@@ -138,10 +138,10 @@ public class RecipeService {
     //전체조회
     public Page<RecipeDTO> list(String keyword, Pageable pageable) throws Exception {
         int curPage = pageable.getPageNumber()-1;
-        int pageLimit = 10;
+        int pageLimit = 9;
 
         Pageable newPage = PageRequest.of(curPage, pageLimit,
-                Sort.by(Sort.Direction.DESC,"rviewcnt"));
+                Sort.by(Sort.Direction.DESC,"regDate"));
 
         Page<RecipeEntity> recipeEntities;
 

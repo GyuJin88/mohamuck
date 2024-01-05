@@ -4,9 +4,12 @@ import com.example.enlaco.DTO.MemberDTO;
 import com.example.enlaco.DTO.StorageDTO;
 import com.example.enlaco.Service.MemberService;
 import com.example.enlaco.Service.StorageService;
+import com.example.enlaco.Service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -30,6 +33,7 @@ import java.util.List;
 public class StorageController {
     private final StorageService storageService;
     private final MemberService memberService;
+    private final UserService userService;
 
     //S3 이미지 정보
     @Value("${cloud.aws.s3.bucket}")
@@ -87,11 +91,14 @@ public class StorageController {
 
     //목록
     @GetMapping("/list")
-    public String list(Principal principal, Model model) throws Exception{
+    public String list(Principal principal, Model model, OAuth2UserRequest userRequest) throws Exception{
         int mid = memberService.findByMemail1(principal.getName());
+        OAuth2User id = userService.loadUser(userRequest);
 
         MemberDTO memberDTO = memberService.detail(mid);
         List<StorageDTO> storageDTOS = storageService.list(mid);
+
+
 
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
