@@ -43,4 +43,7 @@ public class StorageEntity extends BaseEntity {
     @JoinColumn(name = "rid")
     private RecipeEntity recipeEntity;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userid")
+    private UserEntity userEntity;
 }

@@ -2,12 +2,14 @@ package com.example.enlaco.Controller;
 
 import com.example.enlaco.DTO.MemberDTO;
 import com.example.enlaco.DTO.StorageDTO;
+import com.example.enlaco.Entity.UserEntity;
 import com.example.enlaco.Service.MemberService;
 import com.example.enlaco.Service.StorageService;
 import com.example.enlaco.Service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
@@ -25,6 +27,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @Log4j2
@@ -91,14 +94,26 @@ public class StorageController {
 
     //목록
     @GetMapping("/list")
-    public String list(Principal principal, Model model, OAuth2UserRequest userRequest) throws Exception{
-        int mid = memberService.findByMemail1(principal.getName());
-        OAuth2User id = userService.loadUser(userRequest);
+    public String list(Principal principal, Model model, OAuth2AuthenticationToken oauthToken) throws Exception {
+        String loggedInEmail = null;
+        int mid;
+
+        if (oauthToken != null) {
+            OAuth2User oAuth2User = oauthToken.getPrincipal();
+            Map<String, Object> attributes = oAuth2User.getAttributes();
+
+            // OAuth2로 로그인된 사용자의 이메일 속성 가져오기
+            loggedInEmail = (String) attributes.get("email");
+
+            // 해당 이메일로 mid 조회
+            mid = userService.findByEmail(loggedInEmail);
+        } else {
+            // 폼 로그인된 사용자
+            mid = memberService.findByMemail1(principal.getName());
+        }
 
         MemberDTO memberDTO = memberService.detail(mid);
         List<StorageDTO> storageDTOS = storageService.list(mid);
-
-
 
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -146,6 +161,7 @@ public class StorageController {
         model.addAttribute("memberDTO", memberDTO);
         model.addAttribute("storageDTOS", storageDTOS);
         model.addAttribute("mid", mid);
+        model.addAttribute("email", loggedInEmail);
 
         //s3 이미지 전달
         model.addAttribute("bucket", bucket);

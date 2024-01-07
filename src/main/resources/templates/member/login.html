@@ -42,9 +42,14 @@
                 </div>
             </form>
             <div class="center">
-                <a class="btn btn-google" th:href="@{/oauth2/authorization/google}">Google Login</a>
-                <a class="btn btn-naver" th:href="@{/oauth2/authorization/naver}">Naver Login</a>
-                <a class="btn btn-kakao" th:href="@{/oauth2/authorization/kakao}">Kakao Login</a>
+                <a class="btn btn-google" th:href="@{/oauth2/authorization/google}">
+                    <img src="/image/google.png" alt="Google" width="80" height="80">
+                </a>
+                <a class="btn btn-naver" th:href="@{/oauth2/authorization/naver}">
+                    <img src="/image/naver.png" alt="Naver" width="80" height="80">
+                </a>
+
+
             </div>
             <!-- 자동 로그인 체크박스 -->
             <input type="checkbox" id="autoLogin" name="autoLogin">

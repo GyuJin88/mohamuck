@@ -22,6 +22,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserService extends DefaultOAuth2UserService {
     private final UserRepository userRepository;
+    private final MemberService memberService;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -72,6 +73,13 @@ public class UserService extends DefaultOAuth2UserService {
         return userRepository.findByEmail(email).orElse(null);
     }
 
+    public int findByEmail(String email) throws Exception {
+        UserEntity member = userRepository.findByEmail1(email);
+        int mid = member.getId();
+
+        return mid;
+    }
+
     //로그인시 회원테이블에서 필요한 값을 섹션에 저장
     public void userIdToSession(HttpSession session, String email, String oauthType) {
         UserEntity user = getUserByEmail(email);
@@ -83,6 +91,8 @@ public class UserService extends DefaultOAuth2UserService {
             session.setAttribute("userRole", user.getRole()); //회원등급
         }
     }
+
+
 
     /*
     //로그인시 필요한 값을 세션에 저장
@@ -100,4 +110,5 @@ public class UserService extends DefaultOAuth2UserService {
     }
 
      */
+
 }

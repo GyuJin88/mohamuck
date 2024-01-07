@@ -20,6 +20,7 @@ public class StorageDTO {
     private String skeep;
     private Integer rid;
     private Integer mid;
+    private Integer id;     //oauth2 로그인
     private String dDay;
     private String dDayOver; //유통기한 지남 뱃지
 }

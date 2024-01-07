@@ -1,13 +1,46 @@
 <!DOCTYPE html>
-<html lang="en"
+<html lang="en-US" dir="ltr"
 xmlns:th="http://www.thymeleaf.org"
 xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>Bootstrap Example</title>
     <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <!-- ===============================================-->
+    <!--    Document Title-->
+    <!-- ===============================================-->
+    <title>Mohamuck</title>
+
+
+    <!-- ===============================================-->
+    <!--    Favicons-->
+    <!-- ===============================================-->
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/img/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/img/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicons/favicon-16x16.png">
+    <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicons/favicon.ico">
+    <link rel="manifest" href="assets/img/favicons/manifest.json">
+    <meta name="msapplication-TileImage" content="assets/img/favicons/mstile-150x150.png">
+    <meta name="theme-color" content="#ffffff">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- ===============================================-->
+    <!--    Stylesheets-->
+    <!-- ===============================================-->
+    <link href="assets/css/theme.css" rel="stylesheet" />
+    <style>
+        .card-span{
+            width: 100%;
+            height: 100%;
+        }
+        .card-span:hover{
+            width: 110%;
+            height: 110%;
+        }
+
+    </style>
 </head>
 <body>
 <div th:fragment="header">
@@ -15,10 +48,11 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <!--로고-->
     <!-- 로고 부분을 클릭하면 초기화면으로 이동하도록 링크 설정 -->
     <div class="col-4">
-        <a class="navbar-brand d-inline-flex" th:href="@{/start}"> <!-- '/start'는 초기화면 URL로 바꿔주세요 -->
-            <img class="d-inline-block" src="assets/img/gallery/logo.svg" alt="logo" />
-            <span class="text-1000 fs-3 fw-bold ms-2 text-gradient">모해먹</span>
-        </a>
+        <main class="main" id="top">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top" data-navbar-on-scroll="data-navbar-on-scroll">
+            <div class="container"><a class="navbar-brand d-inline-flex" th:href="@{/start}"><img class="d-inline-block" src="assets/img/gallery/logo.svg" alt="logo" /><span class="text-1000 fs-3 fw-bold ms-2 text-gradient">모해먹</span></a></div>
+        </nav>
+        </main>
     </div>
 
     <!--로고 끝-->

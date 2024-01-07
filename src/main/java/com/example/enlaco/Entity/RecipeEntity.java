@@ -47,6 +47,10 @@ public class RecipeEntity extends BaseEntity {
     @JoinColumn(name = "mid")
     private MemberEntity memberEntity;        //회원 번호 / 외래키
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userid")
+    private UserEntity userEntity;              //api 로그인
+
 
 
 }

@@ -20,6 +20,13 @@ public interface StorageRepository extends JpaRepository<StorageEntity, Integer>
     @Query(value = "SELECT * FROM StorageEntity WHERE memail=:memail", nativeQuery = true)
     StorageEntity findByMemail1(String memail);
 
+    /*
+    //userid로 조회해서 목록에 가져오기
+    @Query(value = "SELECT * FROM StorageEntity WHERE userid.id =:id", nativeQuery = true)
+    List<StorageEntity> findByUserId(@Param("userid") Integer id);
+
+     */
+
 }
 
 
