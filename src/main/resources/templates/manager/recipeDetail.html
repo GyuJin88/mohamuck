@@ -1,0 +1,141 @@
+<!-- 프로젝트명 : enlaco
+     파일명    : 매니저 레시피 상세페이지 manager/MemberRecipeDetail.html
+     작성자    : 강규진
+     작성일    : 2023-11-13 11:13
+     TODO     :
+     FixMe    :
+     -->
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layouts/layout}">
+<head>
+    <title>엔라꼬</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+    <!--[if IE 7]-->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome-ie7.min.css">
+    <!--[endif]-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-8" >
+
+            <div class="container mt-5">
+                <div class="row">
+                    <h2><span th:text="${recipeDTO.rmenu}"> 메뉴명</span></h2>
+                    <h6><span th:text="${recipeDTO.rwriter}"> 작성자</span>
+                        <span style="text-align: -moz-right" th:text="${#temporals.format(recipeDTO.regDate, 'yyyy-MM-dd')}">(등록일)</span></h6><br>
+                    <div class="row">
+                        <div class="col-sm-3 mb-3">
+                            <div class="badge rounded-pill bg-success">
+                                <span th:if="${recipeDTO.rtime=='1'}">간단(10분 이내)</span>
+                                <span th:if="${recipeDTO.rtime=='2'}">정성(20분 이내)</span>
+                                <span th:if="${recipeDTO.rtime=='3'}">고수(30분 이상)</span>
+                            </div>&nbsp;
+                            <div class="badge rounded-pill bg-info">
+                                <span th:if="${recipeDTO.rclass=='1'}">한끼 뚝딱</span>
+                                <span th:if="${recipeDTO.rclass=='2'}">면류</span>
+                                <span th:if="${recipeDTO.rclass=='3'}">반찬</span>
+                                <span th:if="${recipeDTO.rclass=='4'}">디저트</span>
+                                <span th:if="${recipeDTO.rclass=='5'}">찌개/국</span>
+                                <span th:if="${recipeDTO.rclass=='6'}">인스턴트</span>
+                            </div>
+                        </div>
+                        <div class="col-sm-9"></div>
+
+                    </div>
+
+                    <hr>
+                    <div class="col-sm-5">
+                        <div class="fakeimg">
+                            <img th:src="${recipeDTO.rimg}" class="img-thumbnail">
+                        </div>
+                        <hr class="d-sm-none">
+                    </div>
+                    <div class="col-sm-7">
+                        <h3>재료</h3>
+                        <div>
+                            <h6><span th:text="${recipeDTO.rselect}"> 감자, 당근, 고구마, 물  등</span></h6>
+                        </div>
+                    </div>
+                    <hr class="mt-3">
+
+                </div>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row" th:utext="${recipeDTO.rcontent}">
+                            레시피 내용<br>
+                            1. 물을 끓인다<br>
+                            2. 스프를 넣는다<br>
+                            3. 면을 넣는다<br>
+                            4. 3분 기다린다<br>
+                            5. 먹는다<br>
+                        </div>
+                    </div>
+                </div>
+                <br>
+
+                <div class="card">
+                    <!-- 댓글 목록 -->
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>작성자</th>
+                                <th>내용</th>
+                                <th>등록일</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="data:${commentDTOS}">
+                                <td th:text="${data.cwriter}">강규진</td>
+                                <td th:text="${data.cbody}">너무 맛있어요</td>
+                                <td th:text="${#temporals.format(data.regDate, 'yyyy-MM-dd')}">2023-11-13</td>
+                                <td>
+                                    <button th:if="${data.cwriter == session.mnickname or recipeDTO.rwriter == session.mnickname}" class="text-end" type="button" th:onclick="|location.href='@{/comment/remove(no=${recipeDTO.rid}, id=${data.cid})}'|">삭제</button>
+                                </td>
+
+
+                                <!--<td><button class="text-end" type="button" th:onclick="|location.href='@{/comment/remove(no=${recipeDTO.rid}, id=${data.cid})}'|">삭제</button> </td>-->
+
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- 댓글 목록 끝 -->
+                    <!-- 댓글 추가 -->
+                    <div class="card-footer" sec:authorize="isAuthenticated()">
+                        <form th:action="@{/comment/register}" method="post">
+                            <div th:if="${recipeDTO != null}">
+                                <input type="hidden" name="rid" th:value="${recipeDTO.rid}">
+                                <input type="hidden" name="cwriter" th:value="${session.mnickname}">
+                            </div>
+                            <div class="mb-3 mt-3">
+                                <textarea class="form-control" rows="3" id="cbody" name="cbody"></textarea>
+                            </div>
+                            <div class="text-lg-end">
+                                <button type="submit" id="btn" style=" color: white" class="btn fw-bold">등록</button>
+                                <button type="reset" class="btn btn-outline-dark ms-2 fw-bold">취소</button>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- 댓글 추가 -->
+                </div>
+                <button type="button" class="btn btn-outline-dark fw-bold" th:onclick="|location.href='/manager/remove?rid=${recipeDTO.rid}'|">삭제</button>
+            </div>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+
+</div>
+</body>
+</html>
