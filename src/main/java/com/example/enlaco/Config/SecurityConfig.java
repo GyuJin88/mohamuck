@@ -23,10 +23,7 @@ public class SecurityConfig {
     private final CustomLoginSuccessHandler customLoginSuccessHandler;
     private final LogoutSuccessHandler logoutSuccessHandler;
     //1. 암호의 암호화
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+
 
     //2. 커스텀 로그인 설정
     @Bean
