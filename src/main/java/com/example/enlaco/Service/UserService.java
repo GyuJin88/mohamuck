@@ -1,6 +1,7 @@
 package com.example.enlaco.Service;
 
 import com.example.enlaco.Constant.Role;
+import com.example.enlaco.DTO.UserDTO;
 import com.example.enlaco.Entity.MemberEntity;
 import com.example.enlaco.Entity.UserEntity;
 import com.example.enlaco.Repository.MemberRepository;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -72,12 +74,15 @@ public class UserService extends DefaultOAuth2UserService {
         return userRepository.findByEmail(email).orElse(null);
     }
 
-    public int findByEmail(String email) throws Exception {
-        UserEntity member = userRepository.findByEmail(email).orElse(null);
-        int userid = member.getId();
-
-        return userid;
+    public Integer findByEmail(String email) throws Exception {
+        UserEntity user = userRepository.findByEmail(email).orElse(null);
+        if (user != null) {
+            return user.getId();
+        } else {
+            return null; // 혹은 다른 적절한 처리를 수행하세요.
+        }
     }
+
 
 
 

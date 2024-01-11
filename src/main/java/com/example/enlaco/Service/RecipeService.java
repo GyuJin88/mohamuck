@@ -235,10 +235,10 @@ public class RecipeService {
     }
 
     //내가 가지고 있는 식재료로 레시피 검색
-    public List<RecipeDTO> recipeRecom(int mid) throws Exception {
+    public List<RecipeDTO> recipeRecom(int mid, int userid) throws Exception {
         String recom = "";
         List<RecipeEntity> recommend = new ArrayList<>();
-        List<StorageDTO> storageDTOS = storageService.list(mid);
+        List<StorageDTO> storageDTOS = storageService.list(mid, userid);
         System.out.println("storageDTOS : " + storageDTOS);
         List<String> list = storageDTOS.stream().map(e -> e.getSingre()).collect(Collectors.toCollection(ArrayList::new));
         /*List<String> list = Arrays.asList("감자","양파");*/

@@ -52,11 +52,12 @@ public class StorageService {
     }
 
     //전체조회
-    public List<StorageDTO> list(int mid) throws Exception {
-        List<StorageEntity> storageEntities = storageRepository.findByMid(mid);
+    public List<StorageDTO> list(int mid, int userid) throws Exception {
+        List<StorageEntity> storageEntitiesMid = storageRepository.findById(mid, userid);
+
 
         List<StorageDTO> storageDTOS = Arrays.asList(
-                modelMapper.map(storageEntities, StorageDTO[].class));
+                modelMapper.map(storageEntitiesMid, StorageDTO[].class));
 
         return storageDTOS;
     }

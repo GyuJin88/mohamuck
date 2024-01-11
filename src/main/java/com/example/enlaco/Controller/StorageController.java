@@ -2,6 +2,7 @@ package com.example.enlaco.Controller;
 
 import com.example.enlaco.DTO.MemberDTO;
 import com.example.enlaco.DTO.StorageDTO;
+import com.example.enlaco.DTO.UserDTO;
 import com.example.enlaco.Entity.UserEntity;
 import com.example.enlaco.Service.MemberService;
 import com.example.enlaco.Service.StorageService;
@@ -96,7 +97,9 @@ public class StorageController {
     @GetMapping("/list")
     public String list(Principal principal, Model model, OAuth2AuthenticationToken oauthToken) throws Exception {
         String loggedInEmail = null;
-        int mid;
+        int mid = 0;
+        Integer userid = 0;
+
 
         if (oauthToken != null) {
             OAuth2User oAuth2User = oauthToken.getPrincipal();
@@ -106,14 +109,16 @@ public class StorageController {
             loggedInEmail = (String) attributes.get("email");
 
             // 해당 이메일로 mid 조회
-            mid = userService.findByEmail(loggedInEmail);
+            userid = userService.findByEmail(loggedInEmail);
         } else {
             // 폼 로그인된 사용자
             mid = memberService.findByMemail1(principal.getName());
         }
 
         MemberDTO memberDTO = memberService.detail(mid);
-        List<StorageDTO> storageDTOS = storageService.list(mid);
+        Integer userDTO = userService.findByEmail(loggedInEmail);
+
+        List<StorageDTO> storageDTOS = storageService.list(mid, userid);
 
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -158,8 +163,9 @@ public class StorageController {
 
         }
 
-        model.addAttribute("memberDTO", memberDTO);
         model.addAttribute("storageDTOS", storageDTOS);
+        model.addAttribute("memberDTO", memberDTO);
+        model.addAttribute("userDTO", userDTO);
         model.addAttribute("mid", mid);
         model.addAttribute("email", loggedInEmail);
 

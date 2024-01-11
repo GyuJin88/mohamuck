@@ -260,8 +260,9 @@ public class RecipeController {
     @GetMapping("/recom")
     public String recom(HttpSession session, Model model) throws Exception {
         int mid = (int) session.getAttribute("mid");
-        List<StorageDTO> storageDTOS = storageService.list(mid);
-        List<RecipeDTO> recipeDTO = recipeService.recipeRecom(mid);
+        int userid = (int) session.getAttribute("userid");
+        List<StorageDTO> storageDTOS = storageService.list(mid, userid);
+        List<RecipeDTO> recipeDTO = recipeService.recipeRecom(mid, userid);
 
 
         model.addAttribute("storageDTOS", storageDTOS);

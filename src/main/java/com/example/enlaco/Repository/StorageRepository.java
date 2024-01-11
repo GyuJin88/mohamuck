@@ -14,8 +14,14 @@ import java.util.List;
 @Repository
 public interface StorageRepository extends JpaRepository<StorageEntity, Integer> {
     //Mid로 조회해서 목록으로 가져오기
+    @Query(value = "SELECT * FROM Storage WHERE mid=:mid or userid=:userid", nativeQuery = true)
+    List<StorageEntity> findById(@Param("mid") Integer mid, @Param("userid") Integer userid);
+
+
     @Query(value = "SELECT * FROM Storage WHERE mid=:mid", nativeQuery = true)
     List<StorageEntity> findByMid(@Param("mid") Integer mid);
+
+
 
     @Query(value = "SELECT * FROM StorageEntity WHERE memail=:memail", nativeQuery = true)
     StorageEntity findByMemail1(String memail);
