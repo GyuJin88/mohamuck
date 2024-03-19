@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -261,11 +262,17 @@ public class RecipeController {
     public String recom(HttpSession session, Model model) throws Exception {
         int mid = (int) session.getAttribute("mid");
         int userid = (int) session.getAttribute("userid");
-        List<StorageDTO> storageDTOS = storageService.list(mid, userid);
-        List<RecipeDTO> recipeDTO = recipeService.recipeRecom(mid, userid);
+        String email = (String) session.getAttribute("email");
+        List<StorageDTO> storageDTOSForm = storageService.listForm(mid);
+        List<StorageDTO> storageDTOSToken = storageService.listForm(userid);
+
+        List<StorageDTO> combinedStorageDTOS = new ArrayList<>();
+        combinedStorageDTOS.addAll(storageDTOSForm);
+        combinedStorageDTOS.addAll(storageDTOSToken);
+        List<RecipeDTO> recipeDTO = recipeService.recipeRecom(mid, email);
 
 
-        model.addAttribute("storageDTOS", storageDTOS);
+        model.addAttribute("storageDTOS", combinedStorageDTOS);
         model.addAttribute("recipeDTO", recipeDTO);
         return "/recipe/recommend";
     }

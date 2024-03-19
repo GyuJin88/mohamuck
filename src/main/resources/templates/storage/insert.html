@@ -2,28 +2,14 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.w3.org/1999/xhtml"
       layout:decorate="~{layouts/layout}">
-<!--<head>
-    <title>Bootstrap Example</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
-    &lt;!&ndash;[if IE 7]&ndash;&gt;
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome-ie7.min.css">
-    &lt;!&ndash;[endif]&ndash;&gt;
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</head>-->
 <th:block layout:fragment="script">
-    <script th:inline="javascript">  //th:inline="javascript" == type="text/javascript"
-    //페이지를 브라우저에서 읽었으면(출력했으면) 동작해라
-    $(document).ready(function(){
-        //작업할 내용을 기재
-        //model.addAttribute("errorMessage","오류입니다.") 이런식으로 Controller에서 보내주기
-        let errorMessage = [[${errorMessage}]];  //서버로부터 errorMessage 값을 받아서
-        if (errorMessage != null && errorMessage.length > 0) {  //전달받은 오류메세지가 있으면
-            alert(errorMessage);  //전달받은 오류메세지를 메세지창에 출력
-        }
-    });
+    <script th:inline="javascript">
+        $(document).ready(function(){
+            let errorMessage = [[${errorMessage}]];
+            if (errorMessage != null && errorMessage.length > 0) {
+                alert(errorMessage);
+            }
+        });
     </script>
 </th:block>
 <body>
@@ -34,16 +20,18 @@
             <div class="col-8 col-md-6">
                 <div class="row">
                     <div class="col-8">
-                <h2 style="padding-bottom: 22px; font-size: xx-large">식재료 등록</h2>
+                        <h2 style="padding-bottom: 22px; font-size: xx-large">식재료 등록</h2>
                     </div>
                     <div class="col-4">
-                <button type="button" id="yolo" class="btn text-white fw-bold float-end" th:onclick="|location.href='@{/storage/image}'|" >사진으로 등록</button>
+                        <button type="button" id="yolo" class="btn text-white fw-bold float-end" th:onclick="|location.href='@{/storage/image}'|" >사진으로 등록</button>
                     </div>
                 </div>
                 <form th:action="@{/storage/insert}" method="post" enctype="multipart/form-data" th:object="${storageDTO}">
-                    <div class="row mb-3"> <!--식재료명, 대표사진 입력 -->
+                    <div class="row mb-3">
                         <div class="col-3 mt-3">
-                            <input type="hidden" name="mid" th:value="${session.mid}">
+                            <input type="hidden" name="idToUse" th:if="${session.mid}" th:value="${session.mid}" />
+                            <input type="hidden" name="idToUse" th:unless="${session.userid}" th:value="${session.userid}" />
+
                             <label for="singre" class="form-label fw-bold">식재료명</label>
                         </div>
                         <div class="col-9">
@@ -53,14 +41,14 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-3 mt-3">
-                        <label for="simg" class="form-label fw-bold">식재료 사진</label>
+                            <label for="simg" class="form-label fw-bold">식재료 사진</label>
                         </div>
                         <div class="col-9">
                             <input type="file" class="form-control" id="simg" name="image">
                             <p class="text-danger" th:if="${#fields.hasErrors('simg')}" th:errors="*{simg}"> </p>
                         </div>
                     </div>
-                    <div class="row mb-3"> <!-- 유통기한 -->
+                    <div class="row mb-3">
                         <div class="col-3 mt-3">
                             <label for="syutong" class="form-label fw-bold">유통기한</label>
                         </div>

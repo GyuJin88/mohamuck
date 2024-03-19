@@ -77,7 +77,7 @@ public class UserService extends DefaultOAuth2UserService {
     public Integer findByEmail(String email) throws Exception {
         UserEntity user = userRepository.findByEmail(email).orElse(null);
         if (user != null) {
-            return user.getId();
+            return user.getUserid();
         } else {
             return null; // 혹은 다른 적절한 처리를 수행하세요.
         }
@@ -92,7 +92,7 @@ public class UserService extends DefaultOAuth2UserService {
 
         if(user != null) {
             session.setAttribute("userEmail", user.getEmail()); //아이디(이메일)
-            session.setAttribute("userId", user.getId()); //회원이 저장된 번호
+            session.setAttribute("userId", user.getUserid()); //회원이 저장된 번호
             session.setAttribute("userNickname", user.getNickname()); //회원이름
             session.setAttribute("userRole", user.getRole()); //회원등급
         }

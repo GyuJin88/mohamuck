@@ -3,7 +3,9 @@ package com.example.enlaco.Controller;
 import com.example.enlaco.DTO.MemberDTO;
 import com.example.enlaco.DTO.StorageDTO;
 import com.example.enlaco.DTO.UserDTO;
+import com.example.enlaco.Entity.MemberEntity;
 import com.example.enlaco.Entity.UserEntity;
+import com.example.enlaco.Repository.MemberRepository;
 import com.example.enlaco.Service.MemberService;
 import com.example.enlaco.Service.StorageService;
 import com.example.enlaco.Service.UserService;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.time.LocalDate;
@@ -29,6 +32,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.ArrayList;
 
 @Controller
 @Log4j2
@@ -76,19 +81,34 @@ public class StorageController {
     }
     @PostMapping("/insert")
     public String insertProc(@Valid StorageDTO storageDTO, BindingResult bindingResult,
-                             @RequestParam("mid") int mid,
-                             @RequestParam(value = "image", required = false, defaultValue = "null") MultipartFile multipartFile) throws Exception {
+                             HttpSession session,
+                             /*
+                             @RequestParam(value = "mid", required = false) Integer mid,
+                             @RequestParam(value = "userid", required = false) Integer userid,
+
+                              */
+                             @RequestParam(value = "image", required = false, defaultValue = "null") MultipartFile multipartFile, Model model) throws Exception {
+        Integer mid = (Integer) session.getAttribute("mid");
+        Integer userid = (Integer) session.getAttribute("userid");
+
         if (bindingResult.hasErrors()) {
+            model.addAttribute("errors", bindingResult.getAllErrors());
             return "storage/insert";
         }
 
-        if (multipartFile != null && !multipartFile.isEmpty()) {
-            storageService.insert(mid, storageDTO, multipartFile);
-        } else {
-            storageService.insert(mid, storageDTO, null); // 파일이 없는 경우에도 처리 가능하도록 null 전달
+        if (mid != null && mid != -1) {
+            if (multipartFile != null && !multipartFile.isEmpty()) {
+                storageService.insertFormLogin(mid, storageDTO, multipartFile); // 폼 로그인된 사용자로 처리
+            } else {
+                storageService.insertFormLogin(mid, storageDTO, null); // 폼 로그인된 사용자로 처리, 파일이 없는 경우에도 처리 가능하도록 null 전달
+            }
+        } else if (userid != null && userid != -1) {
+            if (multipartFile != null && !multipartFile.isEmpty()) {
+                storageService.insertTokenLogin(userid, storageDTO, multipartFile); // 구글 로그인된 사용자로 처리
+            } else {
+                storageService.insertTokenLogin(userid, storageDTO, null); // 구글 로그인된 사용자로 처리, 파일이 없는 경우에도 처리 가능하도록 null 전달
+            }
         }
-
-
 
         return "redirect:/storage/list";
     }
@@ -99,6 +119,7 @@ public class StorageController {
         String loggedInEmail = null;
         int mid = 0;
         Integer userid = 0;
+        String email = "";
 
 
         if (oauthToken != null) {
@@ -118,13 +139,18 @@ public class StorageController {
         MemberDTO memberDTO = memberService.detail(mid);
         Integer userDTO = userService.findByEmail(loggedInEmail);
 
-        List<StorageDTO> storageDTOS = storageService.list(mid, userid);
+        List<StorageDTO> storageDTOSForm = storageService.listForm(mid);
+        List<StorageDTO> storageDTOSToken = storageService.listToken(email);
+
+        List<StorageDTO> combinedStorageDTOS = new ArrayList<>();
+        combinedStorageDTOS.addAll(storageDTOSForm);
+        combinedStorageDTOS.addAll(storageDTOSToken);
 
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
             LocalDate now = LocalDate.now();
 
-            for (StorageDTO storageDTO : storageDTOS) {
+            for (StorageDTO storageDTO : combinedStorageDTOS) {
                 String syutong = storageDTO.getSyutong();
 
                 if (syutong == null || syutong.isEmpty()) {
@@ -155,7 +181,7 @@ public class StorageController {
                 storageDTO.setDDay(dDay);
             }
 
-            model.addAttribute("storageDTOS", storageDTOS);
+            model.addAttribute("storageDTOS", combinedStorageDTOS);
 
         } catch (Exception e) {
             log.error("Error occurred while processing storage list: {}", e.getMessage());
@@ -163,7 +189,8 @@ public class StorageController {
 
         }
 
-        model.addAttribute("storageDTOS", storageDTOS);
+        model.addAttribute("storageDTOS", storageDTOSForm);
+        model.addAttribute("storageDTOS", storageDTOSToken);
         model.addAttribute("memberDTO", memberDTO);
         model.addAttribute("userDTO", userDTO);
         model.addAttribute("mid", mid);

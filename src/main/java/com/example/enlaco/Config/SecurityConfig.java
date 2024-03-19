@@ -32,6 +32,8 @@ public class SecurityConfig {
         http.authorizeHttpRequests((auth)->{
             auth.antMatchers("/","/recipe/list","/recipe/detail","/member/login","/member/insert").permitAll();
             auth.antMatchers("/recipe/insert","/recipe/modify","/recipe/recom","/storage/list","/storage/detail","/storage/insert","/storage/modify","/storage/remove","/member/mypage").hasAnyRole("USER", "ADMIN");
+            auth.antMatchers("/manager/list").hasRole("ADMIN");
+
         });
 
         //로그인 처리에 대한 설정

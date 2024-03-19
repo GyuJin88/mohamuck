@@ -18,8 +18,14 @@ public interface StorageRepository extends JpaRepository<StorageEntity, Integer>
     List<StorageEntity> findById(@Param("mid") Integer mid, @Param("userid") Integer userid);
 
 
-    @Query(value = "SELECT * FROM Storage WHERE mid=:mid", nativeQuery = true)
+    @Query(value = "SELECT * FROM Storage s JOIN Member m ON s.mid = m.mid", nativeQuery = true)
     List<StorageEntity> findByMid(@Param("mid") Integer mid);
+
+    @Query(value = "SELECT * FROM Storage s JOIN User u ON s.userid = u.userid WHERE u.email = :email", nativeQuery = true)
+    List<StorageEntity> findByUid(@Param("email") String email);
+
+    @Query(value = "SELECT s.* FROM Storage s JOIN User u ON s.userid = u.userid", nativeQuery = true)
+    List<StorageEntity> findByUid(@Param("userid") Integer userid);
 
 
 

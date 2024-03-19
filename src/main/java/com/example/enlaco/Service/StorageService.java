@@ -3,21 +3,28 @@ package com.example.enlaco.Service;
 import com.example.enlaco.DTO.StorageDTO;
 import com.example.enlaco.Entity.MemberEntity;
 import com.example.enlaco.Entity.StorageEntity;
+import com.example.enlaco.Entity.UserEntity;
 import com.example.enlaco.Repository.MemberRepository;
 import com.example.enlaco.Repository.StorageRepository;
+import com.example.enlaco.Repository.UserRepository;
 import com.example.enlaco.Util.S3Uploader;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.ArrayList;
+
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +36,7 @@ public class StorageService {
 
     private final StorageRepository storageRepository;
     private final MemberRepository memberRepository;
+    private final UserRepository userRepository;
     private final ModelMapper modelMapper = new ModelMapper();
     //파일 저장을 위한 클래스
     private final S3Uploader s3Uploader;
@@ -51,21 +59,38 @@ public class StorageService {
         return storageDTO;
     }
 
-    //전체조회
-    public List<StorageDTO> list(int mid, int userid) throws Exception {
-        List<StorageEntity> storageEntitiesMid = storageRepository.findById(mid, userid);
+    //폼 로그인시 냉장고 리스트
+    public List<StorageDTO> listForm(Integer mid) throws Exception {
 
+        //List<StorageEntity> storageEntitiesMid = null;
+        List<StorageEntity> storageMid;
+        storageMid = storageRepository.findByMid(mid);
+        //storageEntitiesMid = storageRepository.findById(mid, userid);
 
-        List<StorageDTO> storageDTOS = Arrays.asList(
-                modelMapper.map(storageEntitiesMid, StorageDTO[].class));
+        List<StorageDTO> storageDTOS = new ArrayList<>();
+        //storageDTOS.addAll(Arrays.asList(modelMapper.map(storageEntitiesMid, StorageDTO[].class)));
+        storageDTOS.addAll(Arrays.asList(modelMapper.map(storageMid, StorageDTO[].class)));
 
         return storageDTOS;
     }
 
-    //삽입
-    public void insert(int id, StorageDTO storageDTO, MultipartFile imgFile) throws Exception {
-        Optional<MemberEntity> data = memberRepository.findById(id);
-        MemberEntity member = data.orElseThrow();
+    //토큰 로그인 시 냉장고 리스트
+    public List<StorageDTO> listToken(String email) throws Exception {
+        List<StorageEntity> storageUid;
+
+        storageUid = storageRepository.findByUid(email);
+
+        List<StorageDTO> storageDTOS = new ArrayList<>();
+        storageDTOS.addAll(Arrays.asList(modelMapper.map(storageUid, StorageDTO[].class)));
+
+        return storageDTOS;
+    }
+
+    //폼 로그인 삽입
+    public void insertFormLogin(Integer mid, StorageDTO storageDTO, MultipartFile imgFile) throws Exception {
+
+        Optional<MemberEntity> data = memberRepository.findById(mid);
+        MemberEntity member = data.orElseThrow(() -> new RuntimeException("Member not found with id: " + mid));
 
         if (imgFile!=null) {
             String originalFileName = imgFile.getOriginalFilename();
@@ -77,18 +102,53 @@ public class StorageService {
         } else {
             storageDTO.setSimg(null);
         }
+        storageDTO.setUserid(-1); //필요없는 토큰아이디는 -1로 저장
 
         StorageEntity storage = modelMapper.map(storageDTO, StorageEntity.class);
         storage.setMemberEntity(member);
 
         storageRepository.save(storage);
     }
-    public void aiInsert(int id, StorageDTO storageDTO, String name) throws Exception {
-        Optional<MemberEntity> data = memberRepository.findById(id);
+
+    //토큰 로그인 입력시 삽입
+    public void insertTokenLogin(Integer userid, StorageDTO storageDTO, MultipartFile imgFile) throws Exception {
+
+        Optional<UserEntity> userdata = userRepository.findByUserid(userid);
+        UserEntity user = userdata.orElseThrow(() -> new RuntimeException("User not found with id: " + userid));
+
+        if (imgFile!=null) {
+            String originalFileName = imgFile.getOriginalFilename();
+            String newFIleName = null;
+            if (originalFileName != null) {
+                newFIleName = s3Uploader.upload(imgFile, imgUploadLocation);
+            }
+            storageDTO.setSimg(newFIleName);
+        } else {
+            storageDTO.setSimg(null);
+        }
+        storageDTO.setMid(-1); //필요없는 폼로그인은 -1로 저장
+
+        StorageEntity storage = modelMapper.map(storageDTO, StorageEntity.class);
+        storage.setUserEntity(user);
+
+        storageRepository.save(storage);
+    }
+
+
+
+    public void aiInsert(int mid, StorageDTO storageDTO, String name) throws Exception {
+        Optional<MemberEntity> data = memberRepository.findById(mid);
         MemberEntity member = data.orElseThrow();
         storageDTO.setSimg(name);
+
+        /*
+        Optional<UserEntity> userdata = userRepository.findById(uid);
+        UserEntity user = userdata.orElseThrow();
+        */
+
         StorageEntity storage = modelMapper.map(storageDTO, StorageEntity.class);
         storage.setMemberEntity(member);
+        //storage.setUserEntity(user);
         storageRepository.save(storage);
     }
 

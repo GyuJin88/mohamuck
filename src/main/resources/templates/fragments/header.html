@@ -90,9 +90,12 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
                 <li class="nav-item">
                     <a class="nav-link fw-bold" href="/member/mypage" style="font-size: large">마이페이지</a>
                 </li>
-                <li class="nav-item">
+
+                <li class="nav-item"> <!--th:if="${#authorization.expression('isAuthenticated() and hasAuthority(''ROLE_ADMIN'')')}"-->
                     <a class="nav-link fw-bold" th:href="@{/manager/list}" style="font-size: large">관리자 페이지</a>
                 </li>
+
+
             </ul>
             <form th:action="@{/recipe/list}" method="get" class="d-flex">
                 <input class="form-control me-2" type="text" th:value="${keyword}" name="keyword" placeholder="Search">
