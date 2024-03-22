@@ -1,7 +1,7 @@
 package com.example.enlaco.Config.oauth;
 
-import com.example.enlaco.Entity.UserEntity;
-import com.example.enlaco.Service.UserService;
+import com.example.enlaco.Entity.UsersEntity;
+import com.example.enlaco.Service.UsersService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -21,7 +21,7 @@ import java.util.Map;
 public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     @Autowired
-    UserService userService;
+    private UsersService usersService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -48,7 +48,7 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
 
         log.info("LOGIN SUCCESS : {} FROM {}", email, oauthType);
 
-        UserEntity user = userService.getUserByEmailAndOAuthType(email, oauthType);
+        UsersEntity user = usersService.getUserByEmailAndOAuthType(email, oauthType);
 
         // 세션에 user 저장
         log.info("USER SAVED IN SESSION");
@@ -56,7 +56,7 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
 
         if(session != null) {
             //session.setAttribute("user", email);
-            userService.userIdToSession(session, email, oauthType);
+            usersService.userIdToSession(session, email, oauthType);
         }
 
         super.onAuthenticationSuccess(request, response, authentication);

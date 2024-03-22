@@ -227,4 +227,16 @@ public class MemberService implements UserDetailsService {
         memberRepository.deleteById(mid);
     }
 
+    public MemberEntity getUserByEmail(String email) { return memberRepository.findByMemail(email);};
+
+
+    public void memberToSession(HttpSession session, String email) {
+        MemberEntity member = getUserByEmail(email);
+
+        if (member != null) {
+            session.setAttribute("userEmail", member.getMemail());
+            session.setAttribute("mid", member.getMid());
+            session.setAttribute("mnickname", member.getMnick());
+        }
+    }
 }

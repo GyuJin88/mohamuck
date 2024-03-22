@@ -1,19 +1,18 @@
 package com.example.enlaco.Controller;
 
+import com.example.enlaco.Config.oauth.OAuthLoginSuccessHandler;
 import com.example.enlaco.DTO.MemberDTO;
 import com.example.enlaco.DTO.StorageDTO;
-import com.example.enlaco.DTO.UserDTO;
 import com.example.enlaco.Entity.MemberEntity;
-import com.example.enlaco.Entity.UserEntity;
-import com.example.enlaco.Repository.MemberRepository;
+import com.example.enlaco.Entity.UsersEntity;
 import com.example.enlaco.Service.MemberService;
 import com.example.enlaco.Service.StorageService;
-import com.example.enlaco.Service.UserService;
+import com.example.enlaco.Service.UsersService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,8 +31,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.ArrayList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 @Controller
 @Log4j2
@@ -42,7 +43,12 @@ import java.util.ArrayList;
 public class StorageController {
     private final StorageService storageService;
     private final MemberService memberService;
-    private final UserService userService;
+    private final UsersService usersService;
+
+    @Autowired
+    private OAuthLoginSuccessHandler oAuthLoginSuccessHandler;
+    private static final Logger logger = (Logger) LoggerFactory.getLogger(StorageController.class);
+
 
     //S3 이미지 정보
     @Value("${cloud.aws.s3.bucket}")
@@ -72,74 +78,58 @@ public class StorageController {
     }
     //입력창
     @GetMapping("/insert")
-    public String insertForm(Model model) throws Exception {
+    public String insertForm(Model model, HttpSession session) throws Exception {
         StorageDTO storageDTO = new StorageDTO();
 
-        model.addAttribute("storageDTO", storageDTO);
+        // 세션에서 이메일 가져오기
+        String email = (String) session.getAttribute("userEmail");
+        if (memberService.getUserByEmail(email) != null) {
+            model.addAttribute("email", email);
+        } else if (usersService.getUserByEmail(email) != null) {
+            model.addAttribute("email", email);
+        }
+            // 모델에 추가
+            model.addAttribute("storageDTO", storageDTO);
 
-        return "/storage/insert";
+            return "/storage/insert";
+
     }
+
     @PostMapping("/insert")
     public String insertProc(@Valid StorageDTO storageDTO, BindingResult bindingResult,
-                             HttpSession session,
-                             /*
-                             @RequestParam(value = "mid", required = false) Integer mid,
-                             @RequestParam(value = "userid", required = false) Integer userid,
-
-                              */
-                             @RequestParam(value = "image", required = false, defaultValue = "null") MultipartFile multipartFile, Model model) throws Exception {
-        Integer mid = (Integer) session.getAttribute("mid");
-        Integer userid = (Integer) session.getAttribute("userid");
+                             @RequestParam("email") String userEmail,
+                             @RequestParam(value = "image", required = false, defaultValue = "null")
+                                    MultipartFile multipartFile, Model model) throws Exception {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("errors", bindingResult.getAllErrors());
             return "storage/insert";
         }
 
-        if (mid != null && mid != -1) {
+        if (memberService.getUserByEmail(userEmail) != null) {
             if (multipartFile != null && !multipartFile.isEmpty()) {
-                storageService.insertFormLogin(mid, storageDTO, multipartFile); // 폼 로그인된 사용자로 처리
+                storageService.insertFormLogin(userEmail, storageDTO, multipartFile); // 폼 로그인된 사용자로 처리
             } else {
-                storageService.insertFormLogin(mid, storageDTO, null); // 폼 로그인된 사용자로 처리, 파일이 없는 경우에도 처리 가능하도록 null 전달
+                storageService.insertFormLogin(userEmail, storageDTO, null); // 폼 로그인된 사용자로 처리, 파일이 없는 경우에도 처리 가능하도록 null 전달
             }
-        } else if (userid != null && userid != -1) {
+        } else if (usersService.getUserByEmail(userEmail) != null) {
             if (multipartFile != null && !multipartFile.isEmpty()) {
-                storageService.insertTokenLogin(userid, storageDTO, multipartFile); // 구글 로그인된 사용자로 처리
+                storageService.insertTokenLogin(userEmail, storageDTO, multipartFile); // 구글 로그인된 사용자로 처리
             } else {
-                storageService.insertTokenLogin(userid, storageDTO, null); // 구글 로그인된 사용자로 처리, 파일이 없는 경우에도 처리 가능하도록 null 전달
+                storageService.insertTokenLogin(userEmail, storageDTO, null); // 구글 로그인된 사용자로 처리, 파일이 없는 경우에도 처리 가능하도록 null 전달
             }
         }
 
         return "redirect:/storage/list";
+
     }
 
     //목록
     @GetMapping("/list")
-    public String list(Principal principal, Model model, OAuth2AuthenticationToken oauthToken) throws Exception {
-        String loggedInEmail = null;
-        int mid = 0;
-        Integer userid = 0;
-        String email = "";
+    public String list(HttpSession session, Model model) throws Exception {
+        String email = (String) session.getAttribute("userEmail");
 
-
-        if (oauthToken != null) {
-            OAuth2User oAuth2User = oauthToken.getPrincipal();
-            Map<String, Object> attributes = oAuth2User.getAttributes();
-
-            // OAuth2로 로그인된 사용자의 이메일 속성 가져오기
-            loggedInEmail = (String) attributes.get("email");
-
-            // 해당 이메일로 mid 조회
-            userid = userService.findByEmail(loggedInEmail);
-        } else {
-            // 폼 로그인된 사용자
-            mid = memberService.findByMemail1(principal.getName());
-        }
-
-        MemberDTO memberDTO = memberService.detail(mid);
-        Integer userDTO = userService.findByEmail(loggedInEmail);
-
-        List<StorageDTO> storageDTOSForm = storageService.listForm(mid);
+        List<StorageDTO> storageDTOSForm = storageService.listForm(email);
         List<StorageDTO> storageDTOSToken = storageService.listToken(email);
 
         List<StorageDTO> combinedStorageDTOS = new ArrayList<>();
@@ -188,13 +178,7 @@ public class StorageController {
             // 예외 처리 로직 추가
 
         }
-
-        model.addAttribute("storageDTOS", storageDTOSForm);
-        model.addAttribute("storageDTOS", storageDTOSToken);
-        model.addAttribute("memberDTO", memberDTO);
-        model.addAttribute("userDTO", userDTO);
-        model.addAttribute("mid", mid);
-        model.addAttribute("email", loggedInEmail);
+        model.addAttribute("storageDTOS", combinedStorageDTOS);
 
         //s3 이미지 전달
         model.addAttribute("bucket", bucket);
@@ -207,7 +191,7 @@ public class StorageController {
 
     //수정창
     @GetMapping("/modify")
-    public String modifyForm(Principal principal, int sid, Model model) throws Exception {
+    public String modifyForm(HttpSession session, Principal principal, int sid, Model model) throws Exception {
         String writer = principal.getName();
         int mid = memberService.findByMemail1(writer);
 

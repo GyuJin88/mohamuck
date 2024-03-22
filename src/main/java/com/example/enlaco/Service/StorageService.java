@@ -3,20 +3,18 @@ package com.example.enlaco.Service;
 import com.example.enlaco.DTO.StorageDTO;
 import com.example.enlaco.Entity.MemberEntity;
 import com.example.enlaco.Entity.StorageEntity;
-import com.example.enlaco.Entity.UserEntity;
+import com.example.enlaco.Entity.UsersEntity;
 import com.example.enlaco.Repository.MemberRepository;
 import com.example.enlaco.Repository.StorageRepository;
-import com.example.enlaco.Repository.UserRepository;
+import com.example.enlaco.Repository.UsersRepository;
 import com.example.enlaco.Util.S3Uploader;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
 import org.modelmapper.ModelMapper;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -24,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.ArrayList;
+import org.slf4j.Logger;
 
 
 @Service
@@ -36,7 +35,8 @@ public class StorageService {
 
     private final StorageRepository storageRepository;
     private final MemberRepository memberRepository;
-    private final UserRepository userRepository;
+    private final UsersRepository usersRepository;
+    private static final Logger logger = LoggerFactory.getLogger(StorageService.class);
     private final ModelMapper modelMapper = new ModelMapper();
     //파일 저장을 위한 클래스
     private final S3Uploader s3Uploader;
@@ -60,25 +60,32 @@ public class StorageService {
     }
 
     //폼 로그인시 냉장고 리스트
-    public List<StorageDTO> listForm(Integer mid) throws Exception {
+    public List<StorageDTO> listForm(String email) throws Exception {
 
-        //List<StorageEntity> storageEntitiesMid = null;
         List<StorageEntity> storageMid;
-        storageMid = storageRepository.findByMid(mid);
-        //storageEntitiesMid = storageRepository.findById(mid, userid);
+        storageMid = storageRepository.findByMidOnStorage(email);
 
+
+            List<StorageDTO> storageDTOS = new ArrayList<>();
+            //storageDTOS.addAll(Arrays.asList(modelMapper.map(storageEntitiesMid, StorageDTO[].class)));
+            storageDTOS.addAll(Arrays.asList(modelMapper.map(storageMid, StorageDTO[].class)));
+            return storageDTOS;
+
+
+        /*
         List<StorageDTO> storageDTOS = new ArrayList<>();
         //storageDTOS.addAll(Arrays.asList(modelMapper.map(storageEntitiesMid, StorageDTO[].class)));
         storageDTOS.addAll(Arrays.asList(modelMapper.map(storageMid, StorageDTO[].class)));
 
-        return storageDTOS;
+         */
+
     }
 
     //토큰 로그인 시 냉장고 리스트
     public List<StorageDTO> listToken(String email) throws Exception {
-        List<StorageEntity> storageUid;
 
-        storageUid = storageRepository.findByUid(email);
+        List<StorageEntity> storageUid;
+        storageUid = storageRepository.findByUseridOnStorage(email);
 
         List<StorageDTO> storageDTOS = new ArrayList<>();
         storageDTOS.addAll(Arrays.asList(modelMapper.map(storageUid, StorageDTO[].class)));
@@ -86,11 +93,14 @@ public class StorageService {
         return storageDTOS;
     }
 
-    //폼 로그인 삽입
-    public void insertFormLogin(Integer mid, StorageDTO storageDTO, MultipartFile imgFile) throws Exception {
 
-        Optional<MemberEntity> data = memberRepository.findById(mid);
-        MemberEntity member = data.orElseThrow(() -> new RuntimeException("Member not found with id: " + mid));
+    //폼 로그인 삽입
+    public void insertFormLogin(String userEmail, StorageDTO storageDTO, MultipartFile imgFile) throws Exception {
+
+        //Optional<MemberEntity> data =
+        MemberEntity member = memberRepository.findByMemail(userEmail);
+                //data.orElseThrow(() -> new RuntimeException("Member not found with id: " + userEmail));//
+
 
         if (imgFile!=null) {
             String originalFileName = imgFile.getOriginalFilename();
@@ -103,6 +113,7 @@ public class StorageService {
             storageDTO.setSimg(null);
         }
         storageDTO.setUserid(-1); //필요없는 토큰아이디는 -1로 저장
+        storageDTO.setRid(0);
 
         StorageEntity storage = modelMapper.map(storageDTO, StorageEntity.class);
         storage.setMemberEntity(member);
@@ -111,10 +122,15 @@ public class StorageService {
     }
 
     //토큰 로그인 입력시 삽입
-    public void insertTokenLogin(Integer userid, StorageDTO storageDTO, MultipartFile imgFile) throws Exception {
+    public void insertTokenLogin(String userEmail, StorageDTO storageDTO, MultipartFile imgFile) throws Exception {
 
-        Optional<UserEntity> userdata = userRepository.findByUserid(userid);
-        UserEntity user = userdata.orElseThrow(() -> new RuntimeException("User not found with id: " + userid));
+        UsersEntity user = usersRepository.findByEmailIgnoreCase(userEmail);
+                //.orElseThrow(() -> new RuntimeException("Member not found with id: " + userid));
+
+        //storageDTO.setUserid(user.getUserid());
+        storageDTO.setMid(-1); //필요없는 폼로그인은 -1로 저장
+        storageDTO.setRid(0);
+        //storageDTO.setUserid(user.getEmail());
 
         if (imgFile!=null) {
             String originalFileName = imgFile.getOriginalFilename();
@@ -126,12 +142,25 @@ public class StorageService {
         } else {
             storageDTO.setSimg(null);
         }
-        storageDTO.setMid(-1); //필요없는 폼로그인은 -1로 저장
 
         StorageEntity storage = modelMapper.map(storageDTO, StorageEntity.class);
-        storage.setUserEntity(user);
 
+        storage.setUsersEntity(user);
         storageRepository.save(storage);
+
+        /*
+        StorageEntity savedStorage = storageRepository.save(storage);
+
+        if (savedStorage != null && savedStorage.getSid() != null) {
+            // 저장 성공: ID가 할당되었다면 데이터베이스에 저장된 것임
+            System.out.println("저장이 완료되었습니다. 저장된 엔터티의 ID: " + savedStorage.getSid());
+        } else {
+            // 저장 실패: ID가 할당되지 않았거나 저장된 엔터티가 null인 경우
+            System.out.println("저장에 실패했습니다.");
+        }
+
+         */
+
     }
 
 
@@ -212,6 +241,8 @@ public class StorageService {
         // 두 날짜 간의 차이 계산
         return ChronoUnit.DAYS.between(currentDate, syutongDate);
     }
+
+
 
 
 }

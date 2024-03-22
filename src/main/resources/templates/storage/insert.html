@@ -9,6 +9,7 @@
             if (errorMessage != null && errorMessage.length > 0) {
                 alert(errorMessage);
             }
+
         });
     </script>
 </th:block>
@@ -29,8 +30,11 @@
                 <form th:action="@{/storage/insert}" method="post" enctype="multipart/form-data" th:object="${storageDTO}">
                     <div class="row mb-3">
                         <div class="col-3 mt-3">
-                            <input type="hidden" name="idToUse" th:if="${session.mid}" th:value="${session.mid}" />
-                            <input type="hidden" name="idToUse" th:unless="${session.userid}" th:value="${session.userid}" />
+                            <!--<input type="text" name="idTo" th:value="${#session.getAttribute('userId') != null ? #session.getAttribute('userId') : #session.getAttribute('mid')}" />-->
+                            <input type="text" name="email" th:value="${#session.getAttribute('userEmail')}" />
+
+
+                            <!-- 세션을 사용할 때는 #을 붙이기 -->
 
                             <label for="singre" class="form-label fw-bold">식재료명</label>
                         </div>

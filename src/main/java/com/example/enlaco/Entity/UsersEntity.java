@@ -13,16 +13,17 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 @SequenceGenerator(
-        name = "user_SEQ",
-        sequenceName = "user_SEQ",
+        name = "users_SEQ",
+        sequenceName = "users_SEQ",
         initialValue = 1,
         allocationSize = 1
 )
-public class UserEntity {
+public class UsersEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_SEQ")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_SEQ")
+    @Column(name = "userid")
     private Integer userid;
 
     @Column(name="email", columnDefinition="VARCHAR(100)", nullable=false, unique=true)

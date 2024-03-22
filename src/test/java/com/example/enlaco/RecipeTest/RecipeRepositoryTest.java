@@ -10,9 +10,5 @@ public class RecipeRepositoryTest {
     @Autowired
     RecipeRepository recipeRepository;
 
-    @Test
-    public void SeperateRselectTest() throws Exception {
-        int rid = 1091;
-        System.out.println(recipeRepository.SeperateRselect(rid).toString());
-    }
+
 }

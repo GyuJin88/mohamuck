@@ -45,5 +45,5 @@ public class StorageEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userid")
-    private UserEntity userEntity;
+    private UsersEntity usersEntity;
 }

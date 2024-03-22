@@ -1,6 +1,7 @@
 package com.example.enlaco.Config.oauth;
 
-import com.example.enlaco.Service.UserService;
+import com.example.enlaco.Service.MemberService;
+import com.example.enlaco.Service.UsersService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,7 +20,8 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class CustomLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
-    private final UserService userService;
+    private final UsersService usersService;
+    private final MemberService memberService;
 
     /*
     @Override
@@ -56,11 +58,13 @@ public class CustomLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         if (session != null) {
             String email = authentication.getName();
             String oauthType = ""; // OAuth 2.0 로그인이 아닌 경우에도 oauthType을 설정해야 할 수 있습니다.
-            userService.userIdToSession(session, email, oauthType);
+            memberService.memberToSession(session, email);
         }
 
         super.setDefaultTargetUrl("/");
         super.onAuthenticationSuccess(request, response, authentication);
     }
+
+
 
 }

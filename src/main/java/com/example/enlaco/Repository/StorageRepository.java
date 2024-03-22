@@ -21,12 +21,18 @@ public interface StorageRepository extends JpaRepository<StorageEntity, Integer>
     @Query(value = "SELECT * FROM Storage s JOIN Member m ON s.mid = m.mid", nativeQuery = true)
     List<StorageEntity> findByMid(@Param("mid") Integer mid);
 
-    @Query(value = "SELECT * FROM Storage s JOIN User u ON s.userid = u.userid WHERE u.email = :email", nativeQuery = true)
-    List<StorageEntity> findByUid(@Param("email") String email);
+    @Query(value = "SELECT * FROM Storage s JOIN Users u ON s.userid = u.userid WHERE u.email = :email", nativeQuery = true)
+    List<StorageEntity> findByEmail(@Param("email") String email);
 
     @Query(value = "SELECT s.* FROM Storage s JOIN User u ON s.userid = u.userid", nativeQuery = true)
     List<StorageEntity> findByUid(@Param("userid") Integer userid);
 
+    //@Query(value = "SELECT s.* FROM Storage s, Member m WHERE s.mid = m.mid IN (SELECT mid FROM Member m WHERE m.memail =:memail)", nativeQuery = true)
+    @Query(value = "SELECT s.* FROM Storage s, Member m WHERE s.mid = m.mid AND m.memail IN (SELECT m.memail FROM Member m WHERE m.memail = :memail)", nativeQuery = true)
+    List<StorageEntity> findByMidOnStorage(@Param("memail") String email);
+
+    @Query(value = "SELECT s.* FROM Storage s, Users u WHERE s.userid = u.userid AND u.email IN (SELECT u.email FROM Users u WHERE u.email = :uemail)", nativeQuery = true)
+    List<StorageEntity> findByUseridOnStorage(@Param("uemail") String email);
 
 
     @Query(value = "SELECT * FROM StorageEntity WHERE memail=:memail", nativeQuery = true)

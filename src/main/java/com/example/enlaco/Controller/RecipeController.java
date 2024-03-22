@@ -257,6 +257,7 @@ public class RecipeController {
         return "redirect:/member/mypage";
     }
 
+    /*
     //레시피 추천
     @GetMapping("/recom")
     public String recom(HttpSession session, Model model) throws Exception {
@@ -276,4 +277,6 @@ public class RecipeController {
         model.addAttribute("recipeDTO", recipeDTO);
         return "/recipe/recommend";
     }
+
+     */
 }

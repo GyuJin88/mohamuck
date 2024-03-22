@@ -18,7 +18,7 @@ import java.util.OptionalInt;
 @Repository
 public interface MemberRepository extends JpaRepository<MemberEntity, Integer> {
     //로그인 시 이메일로 조회
-    MemberEntity findByMemail(String memail);
+    MemberEntity findByMemail(String email);
 
     //레시피에서 회원 별로 뽑아내기
     /*@Query(value = "SELECT * FROM Recipe WHERE mid=:mid", nativeQuery = true)

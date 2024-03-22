@@ -23,4 +23,5 @@ public class StorageDTO {
     private Integer userid;     //oauth2 로그인
     private String dDay;
     private String dDayOver; //유통기한 지남 뱃지
+    private String userEmail; //이메일로 판별
 }
