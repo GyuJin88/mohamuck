@@ -22,8 +22,8 @@
             <div class="col-6">
                 <h2 style="padding-bottom: 22px; font-size: xx-large">식재료 수정</h2>
                 <form th:action="@{/storage/modify}" method="post"  enctype="multipart/form-data" th:object="${storageDTO}">
-                    <input type="hidden" name="sid" th:field="*{sid}">
-                    <input type="hidden" name="mid" th:value="${mid}">
+                    <input type="text" name="sid" th:field="*{sid}">
+                    <input type="text" name="mid" th:value="${email}">
                     <div class="row mb-3"> <!--식재료명, 대표사진 입력 -->
                         <div class="col-3 mt-3">
                             <label for="singre" class="form-label fw-bold">식재료명</label>

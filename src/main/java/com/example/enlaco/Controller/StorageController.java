@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.security.Principal;
+import java.sql.Array;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -60,10 +61,16 @@ public class StorageController {
 
     //상세보기
     @GetMapping("/detail")
-    public String detail(int sid, Model model) throws Exception {
-        StorageDTO storageDTO = storageService.detail(sid);
+    public String detail(String email, int sid, Model model) throws Exception {
 
-        model.addAttribute("storageDTO", storageDTO);
+        //List<StorageDTO> combinedStorageDTOS = new ArrayList<>();
+        StorageDTO storageDTOForm = storageService.detailFormLogin(sid);
+        //StorageDTO storageDTOToken = storageService.detailTokenLogin(email);
+
+        //combinedStorageDTOS.add(storageDTOForm);
+        //combinedStorageDTOS.add(storageDTOToken);
+
+        model.addAttribute("storageDTO", storageDTOForm);
         //S3 이미지정보전달
         model.addAttribute("bucket", bucket);
         model.addAttribute("region", region);
@@ -129,8 +136,8 @@ public class StorageController {
     public String list(HttpSession session, Model model) throws Exception {
         String email = (String) session.getAttribute("userEmail");
 
-        List<StorageDTO> storageDTOSForm = storageService.listForm(email);
-        List<StorageDTO> storageDTOSToken = storageService.listToken(email);
+        List<StorageDTO> storageDTOSForm = storageService.listFormLogin(email);
+        List<StorageDTO> storageDTOSToken = storageService.listTokenLogin(email);
 
         List<StorageDTO> combinedStorageDTOS = new ArrayList<>();
         combinedStorageDTOS.addAll(storageDTOSForm);
@@ -192,14 +199,27 @@ public class StorageController {
     //수정창
     @GetMapping("/modify")
     public String modifyForm(HttpSession session, Principal principal, int sid, Model model) throws Exception {
-        String writer = principal.getName();
-        int mid = memberService.findByMemail1(writer);
 
-        StorageDTO storageDTO = storageService.detail(sid);
+        String email = principal.getName();
+        UsersEntity userid = usersService.getUserByEmail(email);
 
-        model.addAttribute("writer", writer);
-        model.addAttribute("mid", mid);
-        model.addAttribute("storageDTO", storageDTO);
+        if(memberService.getUserOptionalEmail(email) != null) {
+            model.addAttribute("email", email);
+        } else if (usersService.getUserByEmail(email) != null) {
+            model.addAttribute("email", userid);
+        }
+
+        //List<StorageDTO> combinedStorageDTOS = new ArrayList<>();
+        StorageDTO storageDTOForm = storageService.detailFormLogin(sid);
+        //StorageDTO storageDTOToken = storageService.detailTokenLogin(email);
+
+        //combinedStorageDTOS.add(storageDTOForm);
+        //combinedStorageDTOS.add(storageDTOToken);
+
+        //model.addAttribute("mid", mid);
+        //model.addAttribute("userid", userid);
+        model.addAttribute("storageDTO", storageDTOForm);
+
         //S3 이미지정보전달
         model.addAttribute("bucket", bucket);
         model.addAttribute("region", region);
@@ -212,10 +232,12 @@ public class StorageController {
                              BindingResult bindingResult,
                              Principal principal,
                              MultipartFile imgFile, Model model) throws Exception {
-        String memail = principal.getName();
+        String email = principal.getName();
 
-        model.addAttribute("mid", memail);
-        storageService.modify(storageDTO, memail, imgFile);
+
+        model.addAttribute("email", email);
+        model.addAttribute("userid", email);
+        storageService.modify(storageDTO, email, imgFile);
         return "redirect:/storage/list";
     }
 

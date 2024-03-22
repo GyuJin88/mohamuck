@@ -238,8 +238,8 @@ public class RecipeService {
     public List<RecipeDTO> recipeRecom(String email) throws Exception {
         String recom = "";
         List<RecipeEntity> recommend = new ArrayList<>();
-        List<StorageDTO> storageDTOSForm = storageService.listForm(email);
-        List<StorageDTO> storageDTOSToken = storageService.listToken(email);
+        List<StorageDTO> storageDTOSForm = storageService.listFormLogin(email);
+        List<StorageDTO> storageDTOSToken = storageService.listTokenLogin(email);
 
         List<StorageDTO> combinedStorageDTOS = new ArrayList<>();
         combinedStorageDTOS.addAll(storageDTOSForm);

@@ -20,6 +20,8 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Integer> {
     //로그인 시 이메일로 조회
     MemberEntity findByMemail(String email);
 
+    @Query("SELECT m FROM MemberEntity m WHERE m.memail = :email")
+    Optional<MemberEntity> findByEmail(String email);
     //레시피에서 회원 별로 뽑아내기
     /*@Query(value = "SELECT * FROM Recipe WHERE mid=:mid", nativeQuery = true)
     Page<RecipeEntity> myList(Integer mid, Pageable pageable);*/

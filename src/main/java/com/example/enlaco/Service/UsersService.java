@@ -70,6 +70,7 @@ public class UsersService extends DefaultOAuth2UserService {
         return usersRepository.findByEmail(email).orElse(null);
     }
 
+
     public Integer findByEmail(String email) throws Exception {
         UsersEntity user = usersRepository.findByEmail(email).orElse(null);
         if (user != null) {

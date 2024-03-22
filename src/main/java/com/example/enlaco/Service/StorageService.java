@@ -51,16 +51,30 @@ public class StorageService {
     }
 
     //개별조회
-    public StorageDTO detail(Integer sid) throws Exception {
-        StorageEntity storage = storageRepository.findById(sid).orElseThrow();
+    public StorageDTO detailFormLogin(int sid) throws Exception {
+
+        Optional<StorageEntity> storage = storageRepository.findById(sid);
+        //StorageEntity storage = storageRepository.findById(sid).orElseThrow();
+
+        StorageDTO storageDTO = modelMapper.map(storage, StorageDTO.class);
+
+        return storageDTO;
+    }
+    /*
+    public StorageDTO detailTokenLogin(int sid) throws Exception {
+
+        Optional<StorageEntity> storage = storageRepository.findById(sid);
+        //StorageEntity storage = storageRepository.findById(sid).orElseThrow();
 
         StorageDTO storageDTO = modelMapper.map(storage, StorageDTO.class);
 
         return storageDTO;
     }
 
+     */
+
     //폼 로그인시 냉장고 리스트
-    public List<StorageDTO> listForm(String email) throws Exception {
+    public List<StorageDTO> listFormLogin(String email) throws Exception {
 
         List<StorageEntity> storageMid;
         storageMid = storageRepository.findByMidOnStorage(email);
@@ -82,7 +96,7 @@ public class StorageService {
     }
 
     //토큰 로그인 시 냉장고 리스트
-    public List<StorageDTO> listToken(String email) throws Exception {
+    public List<StorageDTO> listTokenLogin(String email) throws Exception {
 
         List<StorageEntity> storageUid;
         storageUid = storageRepository.findByUseridOnStorage(email);
@@ -182,15 +196,40 @@ public class StorageService {
     }
 
     //수정
-    public void modify(StorageDTO storageDTO, String memail,  MultipartFile imgFile) throws Exception {
+    public void modify(StorageDTO storageDTO, String email, MultipartFile imgFile) throws Exception {
         int sid = storageDTO.getSid();
-        int mid = memberRepository.findByMemail(memail).getMid();
+        int mid = 0;            //memberRepository.findByMemail(email).getMid();
+        int userid = 0;         //usersRepository.findByEmail(email).get().getUserid();
+
+        if (memberRepository.findByMemail(email) != null) {
+            mid = memberRepository.findByMemail(email).getMid();
+        } else if (usersRepository.findByEmailIgnoreCase(email) != null) {
+            userid = usersRepository.findByEmail(email).get().getUserid();
+        } else {
+            // 이메일이 존재하지 않는 경우 예외 처리
+            throw new Exception("User with email " + email + " does not exist.");
+        }
 
         Optional<StorageEntity> read = storageRepository.findById(sid);
         StorageEntity storage = read.orElseThrow();
 
-        Optional<MemberEntity> data = memberRepository.findById(mid);
-        MemberEntity member = data.orElseThrow();
+        Optional<MemberEntity> data = null;
+        Optional<UsersEntity> udata = null;
+
+        if (mid != 0) {
+            data = memberRepository.findById(mid);
+        } else if (userid != 0) {
+            udata = usersRepository.findOptionalByUserid(userid);
+        }
+
+        MemberEntity member = null;
+        UsersEntity users = null;
+
+        if (data != null) {
+            member = data.orElseThrow();
+        } else if (udata != null) {
+            users = udata.orElseThrow();
+        }
 
         StorageEntity storageEntity = storageRepository.findById(storageDTO.getSid()).orElseThrow();
         String deleteFile = storageEntity.getSimg();
@@ -220,6 +259,7 @@ public class StorageService {
         /*update.setSkeep(storage.getSkeep());  //보관방법*/
         /*update.setSquan(storage.getSquan());  //수량*/
         update.setMemberEntity(member);
+        update.setUsersEntity(users);
 
         storageRepository.save(update);
     }

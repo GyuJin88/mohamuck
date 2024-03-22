@@ -34,6 +34,12 @@ public interface StorageRepository extends JpaRepository<StorageEntity, Integer>
     @Query(value = "SELECT s.* FROM Storage s, Users u WHERE s.userid = u.userid AND u.email IN (SELECT u.email FROM Users u WHERE u.email = :uemail)", nativeQuery = true)
     List<StorageEntity> findByUseridOnStorage(@Param("uemail") String email);
 
+    @Query(value = "SELECT s.* FROM Storage s, Member m WHERE s.sid = s.mid AND s.mid = m.mid AND m.memail IN (SELECT m.memail FROM Member m WHERE m.memail = :memail)", nativeQuery = true)
+    StorageEntity findBySidByMid(@Param("memail") String email);
+
+    @Query(value = "SELECT s.* FROM Storage s, Users u WHERE s.sid = s.suserid AND s.userid = u.userid AND u.email IN (SELECT u.email FROM Users u WHERE u.email = :uemail)", nativeQuery = true)
+    StorageEntity findBySidByUserid(@Param("uemail") String email);
+
 
     @Query(value = "SELECT * FROM StorageEntity WHERE memail=:memail", nativeQuery = true)
     StorageEntity findByMemail1(String memail);

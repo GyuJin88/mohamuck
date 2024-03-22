@@ -229,6 +229,7 @@ public class MemberService implements UserDetailsService {
 
     public MemberEntity getUserByEmail(String email) { return memberRepository.findByMemail(email);};
 
+    public Optional<MemberEntity> getUserOptionalEmail(String email) {return memberRepository.findByEmail(email);};
 
     public void memberToSession(HttpSession session, String email) {
         MemberEntity member = getUserByEmail(email);
