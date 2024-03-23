@@ -29,7 +29,7 @@
                 <h3>레시피 수정</h3>
                 <div class="row mt-4 mb-3"> <!--메뉴명 입력 줄-->
                     <input type="hidden" name="rid" th:field="*{rid}">
-                    <input type="hidden" name="mid" th:value="${mid}">
+                    <input type="hidden" name="email" th:value="${#session.getAttribute('userEmail')}">
                     <input type="hidden" name="rwriter" th:value="${session.mnickname}" th:field="*{rwriter}">
                     <div class="col-3 mt-2">
                         <label for="rmenu" class="form-label fw-bold">메뉴명</label>
@@ -44,7 +44,7 @@
                         <label for="rimg" class="form-label fw-bold">대표 사진</label>
                     </div>
                     <div class="col-9">
-                        <input type="hidden" name="rimg" th:field="*{rimg}">
+                        <input type="text" name="rimg" th:field="*{rimg}">
                         <input type="file" class="form-control" id="rimg" name="imgFile">
                     </div>
                 </div>  <!--대표사진 입력 줄 끝-->

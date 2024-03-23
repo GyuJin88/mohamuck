@@ -3,10 +3,12 @@ package com.example.enlaco.Controller;
 import com.example.enlaco.DTO.CommentDTO;
 import com.example.enlaco.DTO.MemberDTO;
 import com.example.enlaco.DTO.RecipeDTO;
+import com.example.enlaco.DTO.StorageDTO;
 import com.example.enlaco.Entity.MemberEntity;
 import com.example.enlaco.Service.CommentService;
 import com.example.enlaco.Service.MemberService;
 import com.example.enlaco.Service.RecipeService;
+import com.example.enlaco.Service.UsersService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,8 +21,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -29,6 +33,7 @@ import java.util.List;
 @RequestMapping("/member")
 public class MemberController {
     private final MemberService memberService;
+    private final UsersService usersService;
     private final RecipeService recipeService;
     private final CommentService commentService;
 
@@ -104,16 +109,22 @@ public class MemberController {
     }
 
     @GetMapping("/mypage")
-    public String mypage(Principal principal,
-                         Model model) throws Exception {
-        int mid = memberService.findByMemail1(principal.getName());
+    public String mypage(HttpSession session, Model model) throws Exception {
+        String email = (String) session.getAttribute("userEmail");
 
-        MemberDTO memberDTO = memberService.detail(mid);
-        List<RecipeDTO> recipeDTOS = memberService.list(mid);
+        List<RecipeDTO> recipeDTOSForm = recipeService.listFormLoginMypage(email);
+        List<RecipeDTO> recipeDTOSToken = recipeService.listTokenLoginMypage(email);
 
-        model.addAttribute("memberDTO", memberDTO);
-        model.addAttribute("recipeDTOS", recipeDTOS);
-        model.addAttribute("mid", mid);
+        List<RecipeDTO> combinedStorageDTOS = new ArrayList<>();
+        combinedStorageDTOS.addAll(recipeDTOSForm);
+        combinedStorageDTOS.addAll(recipeDTOSToken);
+
+        //MemberDTO memberDTO = memberService.detail(mid);
+        //List<RecipeDTO> recipeDTOS = memberService.list(mid);
+
+        //model.addAttribute("memberDTO", memberDTO);
+        model.addAttribute("recipeDTOS", combinedStorageDTOS);
+        //model.addAttribute("mid", mid);
         return "/member/mypage";
     }
     /*public String mypage(@PageableDefault(page = 1) Pageable pageable,
@@ -143,14 +154,13 @@ public class MemberController {
         return "member/mypage";
     }*/
 
-    @GetMapping("/myrecipedetail")
-    public String myrecipedetail(Principal principal,
+    @GetMapping("/myrecipedetail") public String myrecipedetail(HttpSession session,
             int rid, Model model) throws Exception {
-        int mid = memberService.findByMemail1(principal.getName());
+        String email = (String) session.getAttribute("userEmail");
         RecipeDTO recipeDTO = recipeService.detail(rid);
         List<CommentDTO> commentDTOS = commentService.list(rid);
 
-        model.addAttribute("mid", mid);
+        model.addAttribute("userEmail", email);
         model.addAttribute("recipeDTO", recipeDTO);
         model.addAttribute("commentDTOS", commentDTOS);
 

@@ -1,14 +1,13 @@
 package com.example.enlaco.Controller;
 
+import com.example.enlaco.Config.oauth.OAuthLoginSuccessHandler;
 import com.example.enlaco.DTO.CommentDTO;
 import com.example.enlaco.DTO.RecipeDTO;
 import com.example.enlaco.DTO.StorageDTO;
-import com.example.enlaco.Service.CommentService;
-import com.example.enlaco.Service.MemberService;
-import com.example.enlaco.Service.RecipeService;
-import com.example.enlaco.Service.StorageService;
+import com.example.enlaco.Service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +36,7 @@ public class RecipeController {
     private final RecipeService recipeService;
     private final CommentService commentService;
     private final MemberService memberService;
+    private final UsersService usersService;
     private final StorageService storageService;
 
     //S3 이미지 정보
@@ -159,14 +159,16 @@ public class RecipeController {
 
     //입력
     @GetMapping("/insert")
-    public String insertForm(Principal principal, Model model) throws Exception {
+    public String insertForm(HttpSession session, Model model) throws Exception {
         RecipeDTO recipeDTO = new RecipeDTO();
-        String writer = principal.getName();
-        int mid = memberService.findByMemail1(writer);
-        System.out.println("principal로 조회한 mid : " + mid);
 
-        model.addAttribute("writer", writer);
-        model.addAttribute("mid", mid);
+        String email = (String) session.getAttribute("userEmail");
+        if (memberService.getUserByEmail(email) != null) {
+            model.addAttribute("email", email);
+        } else if (usersService.getUserByEmail(email) != null) {
+            model.addAttribute("email", email);
+        }
+
         model.addAttribute("recipeDTO", recipeDTO);
         return "/recipe/insert";
     }
@@ -174,12 +176,11 @@ public class RecipeController {
     public String insertProc( @Valid RecipeDTO recipeDTO,
                               BindingResult bindingResult,
                               Model model,
-                              @RequestParam("mid") int mid,
-                              @RequestParam(value = "image") MultipartFile multipartFile
-    ) throws Exception {
+                              @RequestParam("email") String userEmail,
+                              @RequestParam(value = "image") MultipartFile multipartFile) throws Exception {
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("mid", mid);
+            model.addAttribute("email", userEmail);
             String rrsel = new RecipeDTO().getRselect(); // 검증 오류 뜰 때 재료창에 쉼표 제거하기 위해 초기화
             //model.addAttribute("rselect", rrsel);
             return "recipe/insert";
@@ -191,14 +192,21 @@ public class RecipeController {
             return "recipe/insert";
         }
          */
-
-        if (multipartFile != null && !multipartFile.isEmpty()) {
-            recipeService.insert(mid, recipeDTO, multipartFile);
-        } else {
-            model.addAttribute("mid", mid);
-            String rrsel = new RecipeDTO().getRselect(); // 검증 오류 뜰 때 재료창에 쉼표 제거하기 위해 초기화
+        if (memberService.getUserByEmail(userEmail) != null) {
+            if (multipartFile != null && !multipartFile.isEmpty()) {
+                recipeService.insertFormLogin(userEmail, recipeDTO, multipartFile);
+            } else {
+                recipeService.insertFormLogin(userEmail, recipeDTO, null);
+            }
+        } else if (usersService.getUserByEmail(userEmail) != null) {
+            if (multipartFile != null && !multipartFile.isEmpty()) {
+                recipeService.insertTokenLogin(userEmail, recipeDTO, multipartFile);
+            } else {
+                recipeService.insertTokenLogin(userEmail, recipeDTO, null);
+            }
+            //String rrsel = new RecipeDTO().getRselect(); // 검증 오류 뜰 때 재료창에 쉼표 제거하기 위해 초기화
             //model.addAttribute("rselect", rrsel);
-            return "recipe/insert";
+
         }
 
         //recipeService.insert(mid, recipeDTO, null); //파일이 없는 경우에도 처리
@@ -207,9 +215,8 @@ public class RecipeController {
 
     //수정
     @GetMapping("/modify")
-    public String modifyForm(Principal principal, int rid, Model model) throws Exception {
-        String writer = principal.getName();
-        int mid = memberService.findByMemail1(writer);
+    public String modifyForm(HttpSession session, int rid, Model model) throws Exception {
+        String email = (String) session.getAttribute("userEmail");
 
         RecipeDTO recipeDTO = recipeService.detail(rid);
         String select = recipeDTO.getRselect();
@@ -220,8 +227,9 @@ public class RecipeController {
             System.out.println(list[i]);
         }
 
-        model.addAttribute("writer", writer);
-        model.addAttribute("mid", mid);
+        //model.addAttribute("writer", writer);
+        //model.addAttribute("mid", mid);
+        model.addAttribute("email", email);
         model.addAttribute("recipeDTO", recipeDTO);
         model.addAttribute("list", list);
 
@@ -236,16 +244,15 @@ public class RecipeController {
     public String modifyProc(@Valid RecipeDTO recipeDTO,
                              BindingResult bindingResult,
                              Principal principal,
-                             @RequestParam("mid") int mid,
+                             @RequestParam("email") String userEmail,
                              MultipartFile imgFile,
                               Model model) throws Exception {
-        String memail = principal.getName();
-        if (bindingResult.hasErrors()) {
 
+        if (bindingResult.hasErrors()) {
             return "recipe/modify";
         }
-        model.addAttribute("mid", memail);
-        recipeService.modify(recipeDTO, memail, imgFile);
+        //model.addAttribute("mid", memail);
+        recipeService.modify(recipeDTO, userEmail, imgFile);
 
         return "redirect:/member/mypage";
     }

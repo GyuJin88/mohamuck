@@ -50,7 +50,6 @@ public class StorageController {
     private OAuthLoginSuccessHandler oAuthLoginSuccessHandler;
     private static final Logger logger = (Logger) LoggerFactory.getLogger(StorageController.class);
 
-
     //S3 이미지 정보
     @Value("${cloud.aws.s3.bucket}")
     public String bucket;
@@ -200,13 +199,12 @@ public class StorageController {
     @GetMapping("/modify")
     public String modifyForm(HttpSession session, Principal principal, int sid, Model model) throws Exception {
 
-        String email = principal.getName();
-        UsersEntity userid = usersService.getUserByEmail(email);
+        String email = (String) session.getAttribute("userEmail");
 
         if(memberService.getUserOptionalEmail(email) != null) {
             model.addAttribute("email", email);
         } else if (usersService.getUserByEmail(email) != null) {
-            model.addAttribute("email", userid);
+            model.addAttribute("email", email);
         }
 
         //List<StorageDTO> combinedStorageDTOS = new ArrayList<>();
@@ -230,14 +228,21 @@ public class StorageController {
     @PostMapping("/modify")
     public String modifyProc(@Valid StorageDTO storageDTO,
                              BindingResult bindingResult,
+                             @RequestParam("email") String userEmail,
                              Principal principal,
                              MultipartFile imgFile, Model model) throws Exception {
-        String email = principal.getName();
+        //String email = principal.getName();
 
 
-        model.addAttribute("email", email);
-        model.addAttribute("userid", email);
-        storageService.modify(storageDTO, email, imgFile);
+        if (imgFile != null && !imgFile.isEmpty()) {
+            storageService.modify( storageDTO, userEmail, imgFile); // 폼 로그인된 사용자로 처리
+        } else {
+            storageService.modify( storageDTO, userEmail, null);// 폼 로그인된 사용자로 처리, 파일이 없는 경우에도 처리 가능하도록 null 전달
+        }
+
+        //model.addAttribute("email", email);
+        //model.addAttribute("userid", email);
+        //storageService.modify(storageDTO, userEmail, multipartFile);
         return "redirect:/storage/list";
     }
 

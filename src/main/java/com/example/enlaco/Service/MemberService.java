@@ -24,6 +24,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 
 import javax.servlet.http.HttpSession;
 import java.util.Arrays;
@@ -125,8 +126,8 @@ public class MemberService implements UserDetailsService {
         }
     }
 
-    //마이페이지조회
-    public List<RecipeDTO> list(Integer mid) throws Exception {
+    //마이페이지조회 - 폼로그인
+    public List<RecipeDTO> list(int mid) throws Exception {
         List<RecipeEntity> recipeEntities = recipeRepository.findByMid(mid);
 
         List<RecipeDTO> recipeDTOS = Arrays.asList(modelMapper.map(recipeEntities, RecipeDTO[].class));
@@ -171,7 +172,7 @@ public class MemberService implements UserDetailsService {
     }*/
 
     //개별조회
-    public MemberDTO detail(int mid) throws Exception {
+    public MemberDTO detail(int mid, Model model) throws Exception {
         Optional<MemberEntity> member = memberRepository.findById(mid);
 
         MemberDTO memberDTO = modelMapper.map(member, MemberDTO.class);

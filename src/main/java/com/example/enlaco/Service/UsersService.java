@@ -1,11 +1,17 @@
 package com.example.enlaco.Service;
 
 import com.example.enlaco.Constant.Role;
+import com.example.enlaco.DTO.RecipeDTO;
 import com.example.enlaco.Entity.MemberEntity;
+import com.example.enlaco.Entity.RecipeEntity;
 import com.example.enlaco.Entity.UsersEntity;
+import com.example.enlaco.Repository.CommentRepository;
+import com.example.enlaco.Repository.RecipeRepository;
+import com.example.enlaco.Repository.StorageRepository;
 import com.example.enlaco.Repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -13,6 +19,8 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -20,6 +28,11 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UsersService extends DefaultOAuth2UserService {
     private final UsersRepository usersRepository;
+    private final RecipeRepository recipeRepository;
+    private final CommentRepository commentRepository;
+    private final StorageRepository storageRepository;
+
+    private final ModelMapper modelMapper = new ModelMapper();
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -45,7 +58,8 @@ public class UsersService extends DefaultOAuth2UserService {
         }
 
         // User 존재여부 확인 및 없으면 생성
-        if(getUserByEmailAndOAuthType(email, oauthType) == null) {
+        //if(getUserByEmailAndOAuthType(email, oauthType) == null) {
+        if(getUserByEmail(email) == null) {
             UsersEntity user = new UsersEntity();
             user.setEmail(email);
             user.setNickname(name);
@@ -101,6 +115,18 @@ public class UsersService extends DefaultOAuth2UserService {
     /*
     public MemberEntity getUserByEmail(String email) {
         return userRepository.findByMemail(email).orElse(null);
+    }
+
+     */
+
+    /*
+    //마이페이지조회 - 폼로그인
+    public List<RecipeDTO> list(String email) throws Exception {
+        List<RecipeEntity> recipeEntities = usersRepository.findByEmailIgnoreCase(email);
+
+        List<RecipeDTO> recipeDTOS = Arrays.asList(modelMapper.map(recipeEntities, RecipeDTO[].class));
+
+        return recipeDTOS;
     }
 
      */

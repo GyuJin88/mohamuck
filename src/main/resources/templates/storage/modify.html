@@ -23,7 +23,7 @@
                 <h2 style="padding-bottom: 22px; font-size: xx-large">식재료 수정</h2>
                 <form th:action="@{/storage/modify}" method="post"  enctype="multipart/form-data" th:object="${storageDTO}">
                     <input type="text" name="sid" th:field="*{sid}">
-                    <input type="text" name="mid" th:value="${email}">
+                    <input type="text" name="email" th:value="${#session.getAttribute('userEmail')}">
                     <div class="row mb-3"> <!--식재료명, 대표사진 입력 -->
                         <div class="col-3 mt-3">
                             <label for="singre" class="form-label fw-bold">식재료명</label>
@@ -39,16 +39,18 @@
                             <label for="simg" class="form-label fw-bold">식재료 사진</label>
                         </div>
                         <div class="col-9">
-                            <input type="hidden" name="simg" th:field="*{simg}">
-                            <img th:if="*{simg != null}" th:src="*{simg}" width="200" height="200" onerror="this.src='/image/이미지 없음.png'">
-                            <img th:unless="*{simg != null}" src="/image/이미지 없음.png" width="200" height="200">
+                            <input type="text" name="simg" th:field="*{simg}">
+                            <input type="file" class="form-control" id="simg" name="imgFile">
                         </div>
+
                     </div>
                     <div class="row mb-3">
                         <div class="col-3">
                         </div>
                         <div class="col-9">
-                            <input type="file" class="form-control" id="simg" name="imgFile">
+                            <input type="hidden" name="simg" th:field="*{simg}">
+                            <img th:if="*{simg != null}" th:src="*{simg}" width="200" height="200" onerror="this.src='/image/이미지 없음.png'">
+                            <img th:unless="*{simg != null}" src="/image/이미지 없음.png" width="200" height="200">
                         </div>
                     </div>
                     <div class="row mb-3"> <!-- 유통기한 -->

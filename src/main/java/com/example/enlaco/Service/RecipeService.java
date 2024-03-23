@@ -4,9 +4,12 @@ import com.example.enlaco.DTO.RecipeDTO;
 import com.example.enlaco.DTO.StorageDTO;
 import com.example.enlaco.Entity.MemberEntity;
 import com.example.enlaco.Entity.RecipeEntity;
+import com.example.enlaco.Entity.StorageEntity;
+import com.example.enlaco.Entity.UsersEntity;
 import com.example.enlaco.Repository.CommentRepository;
 import com.example.enlaco.Repository.MemberRepository;
 import com.example.enlaco.Repository.RecipeRepository;
+import com.example.enlaco.Repository.UsersRepository;
 import com.example.enlaco.Util.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -33,6 +36,7 @@ public class RecipeService {
     private String imgLocation;
     private final RecipeRepository recipeRepository;
     private final MemberRepository memberRepository;
+    private final UsersRepository usersRepository;
     private final CommentRepository commentRepository;
     private final StorageService storageService;
     private final MemberService memberService;
@@ -54,15 +58,40 @@ public class RecipeService {
         recipeRepository.deleteById(rid);
     }
     //수정
-    public void modify(RecipeDTO recipeDTO, String memail, MultipartFile imgFile) throws Exception {
+    public void modify(RecipeDTO recipeDTO, String userEmail, MultipartFile imgFile) throws Exception {
         int rid = recipeDTO.getRid();
-        int mid = memberService.findByMemail1(memail);
+        int mid = 0;
+        int userid = 0;
+
+        if (memberRepository.findByMemail(userEmail) != null) {
+            mid = memberRepository.findByMemail(userEmail).getMid();
+        } else if (usersRepository.findByEmailIgnoreCase(userEmail) != null) {
+            userid = usersRepository.findByEmail(userEmail).get().getUserid();
+        } else {
+            // 이메일이 존재하지 않는 경우 예외 처리
+            throw new Exception("User with email " + userEmail + " does not exist.");
+        }
 
         Optional<RecipeEntity> read = recipeRepository.findById(rid);
         RecipeEntity recipe = read.orElseThrow();
 
-        Optional<MemberEntity> data = memberRepository.findById(mid);
-        MemberEntity member = data.orElseThrow();
+        Optional<MemberEntity> data = null;
+        Optional<UsersEntity> udata = null;
+
+        if (mid != 0) {
+            data = memberRepository.findById(mid);
+        } else if (userid != 0) {
+            udata = usersRepository.findOptionalByUserid(userid);
+        }
+
+        MemberEntity member = null;
+        UsersEntity users = null;
+
+        if (data != null) {
+            member = data.orElseThrow();
+        } else if (udata != null) {
+            users = udata.orElseThrow();
+        }
 
         RecipeEntity recipeEntity = recipeRepository.findById(recipeDTO.getRid()).orElseThrow();
         String deleteFile = recipe.getRimg();
@@ -91,6 +120,7 @@ public class RecipeService {
         update.setRviewcnt(recipe.getRviewcnt());
         update.setRwriter(recipe.getRwriter());
         update.setMemberEntity(member);
+        update.setUsersEntity(users);
         //update.setRtime(recipe.getRtime());
 
         recipeRepository.save(update);
@@ -103,9 +133,9 @@ public class RecipeService {
         return select;
     }//
     //삽입
-    public void insert(int mid, RecipeDTO recipeDTO, MultipartFile imgFile) throws Exception {
-        Optional<MemberEntity> data = memberRepository.findById(mid);
-        MemberEntity memberEntity = data.orElseThrow();
+    public void insertFormLogin(String userEmail, RecipeDTO recipeDTO, MultipartFile imgFile) throws Exception {
+
+        MemberEntity memberEntity = memberRepository.findByMemail(userEmail);
 
         if(imgFile!=null) {
             String originalFileName = imgFile.getOriginalFilename();
@@ -124,6 +154,31 @@ public class RecipeService {
 
         RecipeEntity recipe = modelMapper.map(recipeDTO, RecipeEntity.class);
         recipe.setMemberEntity(memberEntity);
+
+        recipeRepository.save(recipe);
+    }
+
+    public void insertTokenLogin(String userEmail, RecipeDTO recipeDTO, MultipartFile imgFile) throws Exception {
+
+        UsersEntity user = usersRepository.findByEmailIgnoreCase(userEmail);
+
+        if(imgFile!=null) {
+            String originalFileName = imgFile.getOriginalFilename();
+            String newFileName = "";
+        /*if (originalFileName != null) {
+            newFileName = fileService.uploadFile(imgLocation,
+                    originalFileName, imgFile.getBytes());
+        }*/
+            if (originalFileName != null) { //파일이 존재하면
+                newFileName = s3Uploader.upload(imgFile, imgUploadLocation);
+            }
+            recipeDTO.setRimg(newFileName);
+        }else {
+            recipeDTO.setRimg(null);
+        }
+
+        RecipeEntity recipe = modelMapper.map(recipeDTO, RecipeEntity.class);
+        recipe.setUsersEntity(user);
 
         recipeRepository.save(recipe);
     }
@@ -272,6 +327,26 @@ public class RecipeService {
     public void RecipeRecommend() throws Exception {
         recipeRepository.findByRecipeRecom();
     }
+
+    //마이페이지조회 - 폼로그인
+    public List<RecipeDTO> listFormLoginMypage(String email) throws Exception {
+        List<RecipeEntity> recipeMid = recipeRepository.findByMidOnRecipe(email);
+
+        List<RecipeDTO> recipeDTOS = new ArrayList<>();
+        recipeDTOS.addAll(Arrays.asList(modelMapper.map(recipeMid, RecipeDTO[].class)));
+        return recipeDTOS;
+    }
+
+    //마이페이지조회 - 토큰로그인
+    public List<RecipeDTO> listTokenLoginMypage(String email) throws Exception {
+        List<RecipeEntity> recipeUserid = recipeRepository.findByUseridOnRecipe(email);
+
+        List<RecipeDTO> recipeDTOS = new ArrayList<>();
+        recipeDTOS.addAll(Arrays.asList(modelMapper.map(recipeUserid, RecipeDTO[].class)));
+        return recipeDTOS;
+    }
+
+
 
 
 }

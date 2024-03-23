@@ -55,5 +55,13 @@ public interface RecipeRepository extends JpaRepository<RecipeEntity, Integer> {
     @Query(value = "SELECT r FROM RecipeEntity r JOIN StorageEntity s ON r.rselect LIKE CONCAT('%', s.singre, '%') WHERE r.memberEntity.mid=s.memberEntity.mid")
     List<RecipeEntity> findByRecipeRecom();
 
+    //마이페이지에서 폼로그인 시 내가 쓴 레시피 조회
+    @Query(value = "SELECT r.* FROM Recipe r, Member m WHERE r.mid = m.mid AND m.memail IN (SELECT m.memail FROM Member m WHERE m.memail =:email)", nativeQuery = true)
+    List<RecipeEntity> findByMidOnRecipe(@Param("email") String email);
+
+    //마이페이지에서 토큰로그인 시 내가 쓴 레시피 조회
+    @Query(value = "SELECT r.* FROM Recipe r, Users u WHERE r.userid = u.userid AND u.email IN (SELECT u.email FROM Users u WHERE u.email =:email)", nativeQuery = true)
+    List<RecipeEntity> findByUseridOnRecipe(@Param("email") String email);
+
 
 }

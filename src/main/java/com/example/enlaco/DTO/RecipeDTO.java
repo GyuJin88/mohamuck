@@ -29,4 +29,5 @@ public class RecipeDTO {
     private LocalDateTime modDate;
 
     private Integer          mid;
+    private Integer          userid;
 }

@@ -196,18 +196,18 @@ public class StorageService {
     }
 
     //수정
-    public void modify(StorageDTO storageDTO, String email, MultipartFile imgFile) throws Exception {
+    public void modify(StorageDTO storageDTO, String userEmail, MultipartFile imgFile) throws Exception {
         int sid = storageDTO.getSid();
         int mid = 0;            //memberRepository.findByMemail(email).getMid();
         int userid = 0;         //usersRepository.findByEmail(email).get().getUserid();
 
-        if (memberRepository.findByMemail(email) != null) {
-            mid = memberRepository.findByMemail(email).getMid();
-        } else if (usersRepository.findByEmailIgnoreCase(email) != null) {
-            userid = usersRepository.findByEmail(email).get().getUserid();
+        if (memberRepository.findByMemail(userEmail) != null) {
+            mid = memberRepository.findByMemail(userEmail).getMid();
+        } else if (usersRepository.findByEmailIgnoreCase(userEmail) != null) {
+            userid = usersRepository.findByEmail(userEmail).get().getUserid();
         } else {
             // 이메일이 존재하지 않는 경우 예외 처리
-            throw new Exception("User with email " + email + " does not exist.");
+            throw new Exception("User with email " + userEmail + " does not exist.");
         }
 
         Optional<StorageEntity> read = storageRepository.findById(sid);
@@ -238,7 +238,7 @@ public class StorageService {
         String newFileName = null;
 
         if (originalFileName.length() != 0) {
-            if (deleteFile != null) {
+            if (deleteFile.length() != 0) {
                 s3Uploader.deleteFile(storageEntity.getSimg());
             }
 
