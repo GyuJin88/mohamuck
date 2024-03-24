@@ -3,7 +3,14 @@ package com.example.enlaco.Config;
 import com.example.enlaco.Config.oauth.CustomLoginSuccessHandler;
 import com.example.enlaco.Config.oauth.OAuthLoginFailureHandler;
 import com.example.enlaco.Config.oauth.OAuthLoginSuccessHandler;
+import com.example.enlaco.Constant.Role;
+import com.example.enlaco.Entity.UsersEntity;
+import com.example.enlaco.Repository.UsersRepository;
+import com.example.enlaco.Service.AdminService;
+import com.example.enlaco.Service.UsersService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,6 +21,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpSession;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -22,8 +32,14 @@ public class SecurityConfig {
     private final OAuthLoginFailureHandler oAuthLoginFailureHandler;
     private final CustomLoginSuccessHandler customLoginSuccessHandler;
     private final LogoutSuccessHandler logoutSuccessHandler;
-    //1. 암호의 암호화
 
+    private final AdminService adminService;
+    @Value("${admin.email}")
+    private String adminEmail;
+
+
+
+    //1. 암호의 암호화
 
     //2. 커스텀 로그인 설정
     @Bean
@@ -32,7 +48,8 @@ public class SecurityConfig {
         http.authorizeHttpRequests((auth)->{
             auth.antMatchers("/","/recipe/list","/recipe/detail","/member/login","/member/insert").permitAll();
             auth.antMatchers("/recipe/insert","/recipe/modify","/recipe/recom","/storage/list","/storage/detail","/storage/insert","/storage/modify","/storage/remove","/member/mypage").hasAnyRole("USER", "ADMIN");
-            auth.antMatchers("/manager/list").hasRole("ADMIN");
+            auth.antMatchers("/manager/list").hasRole("USER");
+            //auth.antMatchers("/manager/list").hasAuthority("ROLE_ADMIN");
 
         });
 
@@ -67,4 +84,12 @@ public class SecurityConfig {
          */
         return http.build();
     }
+
+
+    @PostConstruct
+    public void init() {
+        adminService.grantAdminRole(adminEmail);
+    }
+
+
 }

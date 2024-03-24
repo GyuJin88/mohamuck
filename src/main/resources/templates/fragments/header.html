@@ -26,6 +26,7 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <meta name="theme-color" content="#ffffff">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <!-- ===============================================-->
     <!--    Stylesheets-->
     <!-- ===============================================-->
@@ -41,6 +42,8 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
         }
 
     </style>
+
+
 </head>
 <body>
 <div th:fragment="header">
@@ -51,15 +54,21 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
         <main class="main" id="top">
         <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top" data-navbar-on-scroll="data-navbar-on-scroll">
             <div class="container"><a class="navbar-brand d-inline-flex" th:href="@{/start}"><img class="d-inline-block" src="/assets/img/gallery/logo.svg" alt="logo" /><span class="text-1000 fs-3 fw-bold ms-2 text-gradient">모해먹</span></a></div>
-            <span th:fragment="username(username)" class="mt-5">
+            <span th:fragment="username(username)" >
+                <form class="d-flex mt-4 mt-lg-0  ms-xl-0 align-self-end mr-4 ">
+                    <button class="btn btn-white shadow-warning border-warning text-center" style="color: #f7931e; box-shadow: #f7931e" type="button" sec:authorize="isAnonymous()" onclick="location.href='/member/login'"> <i class="fas fa-user"></i>로그인</button>
+                    <button class="btn btn-white shadow-warning border-warning text-center" style="color: #f7931e; box-shadow: #f7931e; margin-left: 10px" type="button" sec:authorize="isAnonymous()" onclick="location.href='/member/insert'"> <i class="fas fa-user"></i>회원가입</button>
+                    <span sec:authorize="isAuthenticated()" style="margin-right: 40px; margin-top: 30px;">
+                        <span style="color: rgba(33,218,20,0.53); font-size: 20px; font-weight: bold;">[[${session.mnickname}]]</span>
+                        <span style="color: rgba(33,218,20,0.53); font-size: 20px; font-weight: bold;">[[${session.userNickname}]]</span>님 환영합니다
+                    </span>
+                    <button class="btn btn-white shadow-warning border-warning text-center" style="color: #f7931e; box-shadow: #f7931e" sec:authorize="isAuthenticated()" type="button" onclick="location.href='/member/logout'"> <i class="fas fa-user"></i>로그아웃</button>
+                </form>
 
-        <span onclick="location.href='/member/login'" sec:authorize="isAnonymous()" style="cursor: pointer; margin-top: 30px">로그인</span>&nbsp;&nbsp;&nbsp;
-        <span onclick="location.href='/member/insert'" sec:authorize="isAnonymous()" style="cursor: pointer; margin-right: 60px; margin-top: 30px">회원가입</span>
-        <span  sec:authorize="isAuthenticated()" style=" margin-right: 40px; margin-top: 30px">[[${session.mnickname}]]님 환영합니다</span>
-        <span onclick="location.href='/member/logout'" sec:authorize="isAuthenticated()" style="cursor: pointer; margin-top: 30px">로그아웃</span>
-    </span>
+            </span>
+
         </nav>
-
+            <br>
         </main>
     </div>
 
@@ -79,7 +88,8 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     </div>
 </div>
     <!--네비바-->
-<nav class="navbar navbar-expand-md " style="background-color: rgb(255,170,1)">
+    <div class="mt-4">
+<nav class="navbar navbar-expand-md" style="background-color: rgb(255,170,1); height: 80px; margin-top: 20px">
     <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
             <span class="navbar-toggler-icon"></span>
@@ -98,10 +108,10 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
                 <li class="nav-item">
                     <a class="nav-link fw-bold" href="/member/mypage" style="font-size: large">마이페이지</a>
                 </li>
-
-                <li class="nav-item"> <!--th:if="${#authorization.expression('isAuthenticated() and hasAuthority(''ROLE_ADMIN'')')}"-->
-                    <a class="nav-link fw-bold" th:href="@{/manager/list}" style="font-size: large">관리자 페이지</a>
+                <li class="nav-item" th:if="${session.ADMIN}">
+                    <a class="nav-link fw-bold" th:href="@{/manager/list}"  style="font-size: large">관리자 페이지</a>
                 </li>
+
 
 
             </ul>
@@ -116,6 +126,7 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
         </div>
     </div>
 </nav>
+    </div>
     <!--네비바 끝-->
 
 </div>

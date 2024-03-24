@@ -4,6 +4,7 @@ import com.example.enlaco.Entity.UsersEntity;
 import com.example.enlaco.Service.UsersService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -22,6 +23,9 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
 
     @Autowired
     private UsersService usersService;
+
+    @Value("${admin.email}")
+    public String adminEmail;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -50,6 +54,9 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
 
         UsersEntity user = usersService.getUserByEmailAndOAuthType(email, oauthType);
 
+        // 관리자 여부 확인
+        boolean isAdmin = email.equals(adminEmail);
+
         // 세션에 user 저장
         log.info("USER SAVED IN SESSION");
         HttpSession session = request.getSession();
@@ -57,9 +64,13 @@ public class OAuthLoginSuccessHandler extends SimpleUrlAuthenticationSuccessHand
         if(session != null) {
             //session.setAttribute("user", email);
             usersService.userIdToSession(session, email, oauthType);
+            session.setAttribute("ADMIN", isAdmin); // 관리자 여부 저장
         }
 
+
         super.onAuthenticationSuccess(request, response, authentication);
+
+
     }
 
 }

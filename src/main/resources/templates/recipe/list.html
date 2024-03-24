@@ -243,7 +243,8 @@
                     </div>
                 </form>
                 <div class="row">
-                    <div class="col-lg-4 col-md-6 col-sm-12 mb-3" th:if="recipeDTO"  th:each="data:${recipeDTOS}">
+                    <div class="row row-cols-1 row-cols-md-4">
+                        <div class="col mb-3" th:if="recipeDTO" th:each="data:${recipeDTOS}">
                         <article class="card" th:onclick="|location.href='@{/recipe/detail(rid=${data.rid})}'|">
                             <figure class="card-image">
                                 <img th:src="${data.rimg}" class="img-fluid" style="min-width: 100%; height: 200px;" alt="An orange painted blue, cut in half laying on a blue background" />

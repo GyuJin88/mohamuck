@@ -12,6 +12,7 @@ import com.example.enlaco.Repository.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -67,6 +68,16 @@ public class UsersService extends DefaultOAuth2UserService {
             user.setRole(Role.USER);
             save(user);
         }
+        /*
+        else {
+            UsersEntity users = usersRepository.findByEmailIgnoreCase(email);
+            if (email.equals(adminEmail)) {
+                users.setRole(Role.ADMIN);
+            }
+            usersRepository.save(users);
+        }
+
+         */
 
         return super.loadUser(userRequest);
     }
@@ -94,9 +105,6 @@ public class UsersService extends DefaultOAuth2UserService {
         }
     }
 
-
-
-
     //로그인시 회원테이블에서 필요한 값을 섹션에 저장
     public void userIdToSession(HttpSession session, String email, String oauthType) {
         UsersEntity user = getUserByEmail(email);
@@ -108,27 +116,5 @@ public class UsersService extends DefaultOAuth2UserService {
             session.setAttribute("userRole", user.getRole()); //회원등급
         }
     }
-
-
-    //로그인시 필요한 값을 세션에 저장
-
-    /*
-    public MemberEntity getUserByEmail(String email) {
-        return userRepository.findByMemail(email).orElse(null);
-    }
-
-     */
-
-    /*
-    //마이페이지조회 - 폼로그인
-    public List<RecipeDTO> list(String email) throws Exception {
-        List<RecipeEntity> recipeEntities = usersRepository.findByEmailIgnoreCase(email);
-
-        List<RecipeDTO> recipeDTOS = Arrays.asList(modelMapper.map(recipeEntities, RecipeDTO[].class));
-
-        return recipeDTOS;
-    }
-
-     */
 
 }
