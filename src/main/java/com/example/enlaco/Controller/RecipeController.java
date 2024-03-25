@@ -49,12 +49,20 @@ public class RecipeController {
 
     //상세페이지
     @GetMapping("/detail")
-    public String detail(Principal principal, int rid, Model model) throws Exception {
+    public String detail(Principal principal, HttpSession session, int rid, Model model) throws Exception {
+        /*
         String writer = "";
         if (principal == null) {
             writer = "";
         } else {
             writer = principal.getName();
+        }
+         */
+        String email = (String) session.getAttribute("userEmail");
+        if (memberService.getUserByEmail(email) != null) {
+            model.addAttribute("writer", email);
+        } else if (usersService.getUserByEmail(email) != null) {
+            model.addAttribute("writer", email);
         }
 
         recipeService.viewcnt(rid);
@@ -66,7 +74,7 @@ public class RecipeController {
 
         model.addAttribute("recipeDTO", recipeDTO);
         model.addAttribute("commentDTOS", commentDTOS);
-        model.addAttribute("writer", writer);
+
 
         //S3 이미지정보전달
         model.addAttribute("bucket", bucket);

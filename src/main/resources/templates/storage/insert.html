@@ -31,7 +31,7 @@
                     <div class="row mb-3">
                         <div class="col-3 mt-3">
                             <!--<input type="text" name="idTo" th:value="${#session.getAttribute('userId') != null ? #session.getAttribute('userId') : #session.getAttribute('mid')}" />-->
-                            <input type="text" name="email" th:value="${#session.getAttribute('userEmail')}" />
+                            <input type="hidden" name="email" th:value="${#session.getAttribute('userEmail')}" />
 
 
                             <!-- 세션을 사용할 때는 #을 붙이기 -->

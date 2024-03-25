@@ -282,7 +282,4 @@ public class StorageService {
         return ChronoUnit.DAYS.between(currentDate, syutongDate);
     }
 
-
-
-
 }

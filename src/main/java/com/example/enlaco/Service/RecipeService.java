@@ -151,6 +151,7 @@ public class RecipeService {
         }else {
             recipeDTO.setRimg(null);
         }
+        recipeDTO.setRwriter(memberEntity.getMnick());  //멤버 테이블에서 닉네임 가져와서 DTo에 저장하기
 
         RecipeEntity recipe = modelMapper.map(recipeDTO, RecipeEntity.class);
         recipe.setMemberEntity(memberEntity);
@@ -176,6 +177,8 @@ public class RecipeService {
         }else {
             recipeDTO.setRimg(null);
         }
+
+        recipeDTO.setRwriter(user.getNickname());   //유저 테이블에서 닉네임 가져와서 DTo에 저장하기
 
         RecipeEntity recipe = modelMapper.map(recipeDTO, RecipeEntity.class);
         recipe.setUsersEntity(user);
