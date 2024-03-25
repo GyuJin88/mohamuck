@@ -98,7 +98,7 @@
                                 <td th:text="${#temporals.format(data.regDate, 'yyyy-MM-dd')}">2023-11-13</td>
                                 <td>
                                     <!--<button th:if="${(data.cwriter) == (#session.getAttribute('userEmail')) or (recipeDTO.rwriter) == (#session.getAttribute('userEmail'))}" class="text-end" type="button" th:onclick="|location.href='@{/comment/remove(no=${recipeDTO.rid}, id=${data.cid})}'|">삭제</button>-->
-                                    <button th:if="${data.cwriter == session.mnickname or recipeDTO.rwriter == session.mnickname or recipeDTO.rwriter == session.userNickname or data.cwriter == session.userNickname or session.ADMIN}" class="text-end" type="button" th:onclick="|location.href='@{/comment/remove(no=${recipeDTO.rid}, id=${data.cid})}'|">삭제</button>
+                                    <button th:if="${data.cwriter == session.mnickname or recipeDTO.rwriter == session.mnickname or recipeDTO.rwriter == session.unickname or data.cwriter == session.unickname or session.ADMIN}" class="text-end" type="button" th:onclick="|location.href='@{/comment/remove(no=${recipeDTO.rid}, id=${data.cid})}'|">삭제</button>
                                 </td>
 
 

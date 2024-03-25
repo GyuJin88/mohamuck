@@ -1,5 +1,6 @@
 package com.example.enlaco.Repository;
 
+import com.example.enlaco.DTO.RecipeDTO;
 import com.example.enlaco.DTO.StorageDTO;
 import com.example.enlaco.Entity.RecipeEntity;
 import com.example.enlaco.Entity.StorageEntity;
@@ -59,9 +60,21 @@ public interface RecipeRepository extends JpaRepository<RecipeEntity, Integer> {
     @Query(value = "SELECT r.* FROM Recipe r, Member m WHERE r.mid = m.mid AND m.memail IN (SELECT m.memail FROM Member m WHERE m.memail =:email)", nativeQuery = true)
     List<RecipeEntity> findByMidOnRecipe(@Param("email") String email);
 
+    @Query(value = "SELECT r.* FROM Recipe r, Member m WHERE r.mid = m.mid AND m.memail IN (SELECT m.memail FROM Member m WHERE m.memail =:email)", nativeQuery = true)
+    Page<RecipeEntity> findByRwriterMid(String email, Pageable pageable);
+
     //마이페이지에서 토큰로그인 시 내가 쓴 레시피 조회
     @Query(value = "SELECT r.* FROM Recipe r, Users u WHERE r.userid = u.userid AND u.email IN (SELECT u.email FROM Users u WHERE u.email =:email)", nativeQuery = true)
     List<RecipeEntity> findByUseridOnRecipe(@Param("email") String email);
+
+    @Query(value = "SELECT r FROM RecipeEntity r, UsersEntity u WHERE r.usersEntity.userid = u.userid AND u.email IN (SELECT u.email FROM UsersEntity u WHERE u.email =:email)", nativeQuery = false)
+    Page<RecipeEntity> findByRwriterUserid(String email, Pageable pageable);
+
+
+
+
+
+
 
 
 }

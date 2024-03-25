@@ -239,6 +239,7 @@ public class MemberService implements UserDetailsService {
             session.setAttribute("userEmail", member.getMemail());
             session.setAttribute("mid", member.getMid());
             session.setAttribute("mnickname", member.getMnick());
+            session.setAttribute("userRole", member.getRole()); //회원등급
         }
     }
 }

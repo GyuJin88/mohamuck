@@ -112,7 +112,7 @@ public class UsersService extends DefaultOAuth2UserService {
         if(user != null) {
             session.setAttribute("userEmail", user.getEmail()); //아이디(이메일)
             session.setAttribute("userId", user.getUserid()); //회원이 저장된 번호
-            session.setAttribute("userNickname", user.getNickname()); //회원이름
+            session.setAttribute("unickname", user.getNickname()); //회원이름
             session.setAttribute("userRole", user.getRole()); //회원등급
         }
     }

@@ -196,7 +196,7 @@ public class RecipeService {
     //전체조회
     public Page<RecipeDTO> list(String keyword, Pageable pageable) throws Exception {
         int curPage = pageable.getPageNumber()-1;
-        int pageLimit = 9;
+        int pageLimit = 16;
 
         Pageable newPage = PageRequest.of(curPage, pageLimit,
                 Sort.by(Sort.Direction.DESC,"regDate"));

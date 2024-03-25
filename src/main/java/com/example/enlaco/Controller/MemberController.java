@@ -108,6 +108,7 @@ public class MemberController {
         return "/member/login";
     }
 
+    /*
     @GetMapping("/mypage")
     public String mypage(HttpSession session, Model model) throws Exception {
         String email = (String) session.getAttribute("userEmail");
@@ -127,50 +128,10 @@ public class MemberController {
         //model.addAttribute("mid", mid);
         return "/member/mypage";
     }
-    /*public String mypage(@PageableDefault(page = 1) Pageable pageable,
-                         Model model) throws Exception {
-        int mid = 1;
-        Page<RecipeDTO> recipeDTOS = memberService.myList(mid, pageable);
 
-        //페이지 정보
-        int blockLimit = 5;
-        int startPage = (((int)(Math.ceil((double)pageable.getPageNumber()/blockLimit)))-1) * blockLimit+1;
-        int endPage = ((startPage+blockLimit-1)<recipeDTOS.getTotalPages())? startPage+blockLimit-1:recipeDTOS.getTotalPages();
+     */
 
-        int prevPage = recipeDTOS.getNumber();
-        int curPage = recipeDTOS.getNumber()+1;
-        int nextPage = recipeDTOS.getNumber()+2;
-        int lastPage = recipeDTOS.getTotalPages();
 
-        model.addAttribute("recipeDTOS", recipeDTOS);
-
-        model.addAttribute("startPage", startPage);
-        model.addAttribute("endPage", endPage);
-        model.addAttribute("prevPage", prevPage);
-        model.addAttribute("curPage", curPage);
-        model.addAttribute("nextPage", nextPage);
-        model.addAttribute("lastPage", lastPage);
-
-        return "member/mypage";
-    }*/
-
-    @GetMapping("/myrecipedetail") public String myrecipedetail(HttpSession session,
-            int rid, Model model) throws Exception {
-        String email = (String) session.getAttribute("userEmail");
-        RecipeDTO recipeDTO = recipeService.detail(rid);
-        List<CommentDTO> commentDTOS = commentService.list(rid);
-
-        model.addAttribute("userEmail", email);
-        model.addAttribute("recipeDTO", recipeDTO);
-        model.addAttribute("commentDTOS", commentDTOS);
-
-        //s3 이미지 전달
-        model.addAttribute("bucket", bucket);
-        model.addAttribute("region", region);
-        model.addAttribute("folder", folder);
-
-        return "/member/myrecipedetail";
-    }
 
     @PostMapping("/logout")
     public String logout(HttpServletResponse response) {

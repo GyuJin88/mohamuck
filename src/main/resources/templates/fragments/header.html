@@ -60,7 +60,7 @@ xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
                     <button class="btn btn-white shadow-warning border-warning text-center" style="color: #f7931e; box-shadow: #f7931e; margin-left: 10px" type="button" sec:authorize="isAnonymous()" onclick="location.href='/member/insert'"> <i class="fas fa-user"></i>회원가입</button>
                     <span sec:authorize="isAuthenticated()" style="margin-right: 40px; margin-top: 30px;">
                         <span style="color: rgba(33,218,20,0.53); font-size: 20px; font-weight: bold;">[[${session.mnickname}]]</span>
-                        <span style="color: rgba(33,218,20,0.53); font-size: 20px; font-weight: bold;">[[${session.userNickname}]]</span>님 환영합니다
+                        <span style="color: rgba(33,218,20,0.53); font-size: 20px; font-weight: bold;">[[${session.unickname}]]</span>님 환영합니다
                     </span>
                     <button class="btn btn-white shadow-warning border-warning text-center" style="color: #f7931e; box-shadow: #f7931e" sec:authorize="isAuthenticated()" type="button" onclick="location.href='/member/logout'"> <i class="fas fa-user"></i>로그아웃</button>
                 </form>

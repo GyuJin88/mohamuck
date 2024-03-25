@@ -21,7 +21,7 @@
         }
 
         .table-content {
-            flex: 0 0 85%; /* 표 영역의 크기 조정 */
+            flex: 0 0 80%; /* 표 영역의 크기 조정 */
             display: none; /* 초기에 숨깁니다 */
         }
 
@@ -40,6 +40,9 @@
             overflow-x: hidden;
             transition: width 0.3s ease; /* 세로바의 너비 전환 효과를 추가합니다. */
             height: 100%;
+            position: fixed;
+            z-index: 1;
+            height: 100%; /* content의 높이와 동일하도록 설정 */
         }
 
         /* 마우스가 content 영역 내부에 있을 때 */
@@ -55,7 +58,7 @@
         /* 마우스가 content 영역 내부를 벗어나고, content 영역 내부인데 width 281 이상일 때 */
         .content:not(:hover) .vertical-bar,
         .content .vertical-bar {
-            width: 0; /* 초기 너비로 되돌림 */
+            width: 10px; /* 초기 너비로 되돌림 */
         }
 
         /* 세로바 내부 스타일 */
@@ -66,7 +69,7 @@
 
         .page-content {
             padding: 15px;
-            margin-left: 280px; /* 세로바의 너비만큼 마진 추가 */
+            margin-left: 10px; /* 세로바의 너비만큼 마진 추가 */
             transition: margin-left 0.3s ease; /* 변화가 자연스럽게 일어나도록 트랜지션 효과 추가 */
             display: flex; /* Flexbox를 사용하여 내부 요소들을 수평 정렬합니다. */
             align-items: flex-start; /* 요소들을 수직 정렬하여 수평으로 맞춥니다. */
