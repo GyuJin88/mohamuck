@@ -42,4 +42,15 @@ public class CommentController {
         redirectAttributes.addAttribute("rid", no);
         return "redirect:/recipe/detail";
     }
+
+    /*
+    @GetMapping("/comment/rgoodcnt")  //레시피 좋아요
+    public String rgoodcnt(int id, int no, RedirectAttributes redirectAttributes) throws Exception {
+        commentService.rgoodcnt(id);
+
+        redirectAttributes.addAttribute("id", no);
+        return "redirect:/recipe/detail";
+    }
+
+     */
 }

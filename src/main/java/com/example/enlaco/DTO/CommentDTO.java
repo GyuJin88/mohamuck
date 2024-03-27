@@ -15,4 +15,5 @@ public class CommentDTO {
     private String cwriter;
     private LocalDateTime regDate;
     private Integer recipeid;
+    private Integer rgoodcnt;
 }

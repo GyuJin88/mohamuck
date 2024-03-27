@@ -209,6 +209,7 @@ public class RecipeService {
             recipeEntities = recipeRepository.findAll(newPage);
         }
 
+
         Page<RecipeDTO> recipeDTOS = recipeEntities.map(data-> RecipeDTO.builder()
                 .rid(data.getRid())
                 .rimg(data.getRimg())
@@ -222,6 +223,7 @@ public class RecipeService {
                 .rgoodcnt(data.getRgoodcnt())
                 .regDate(data.getRegDate())
                 .modDate(data.getModDate())
+                .rgoodcnt(data.getRgoodcnt())
                 /*.mid(data.getMemberEntity().getMid())*/
                 .build());
 
@@ -349,7 +351,9 @@ public class RecipeService {
         return recipeDTOS;
     }
 
-
+    public void rgoodcnt(int rid) throws Exception {
+        recipeRepository.rgoodcnt(rid);
+    }
 
 
 }

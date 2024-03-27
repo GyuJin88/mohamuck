@@ -14,7 +14,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -36,46 +35,37 @@ public class MyPageController {
     @Value("${imgUploadLocation}")
     public String folder;
 
+    //마이페이지 내 레시피 관리
     @GetMapping("/member/mypage")
-    public String mypageList(@PageableDefault(page = 1) Pageable pageable,
+    public String mypageRecipeList(@PageableDefault(page = 1) Pageable pageable,
                                 HttpSession session, Model model) throws Exception {
         String email = (String) session.getAttribute("userEmail");
 
-        Page<RecipeDTO> recipeDTOS = myPageService.listTokenLogin(email, pageable);
+        Page<RecipeDTO> recipeDTOS = myPageService.recieListTokenLogin(email, pageable);
+        setRecipeInfo(recipeDTOS, model);
 
-        /*
-        //페이지 정보
-        int blockLimit = 5;
-        int startPage = (((int)(Math.ceil((double)pageable.getPageNumber()/blockLimit)))-1) * blockLimit+1;
-        int endPage = ((startPage+blockLimit-1)<recipeDTOS.getTotalPages())? startPage+blockLimit-1:recipeDTOS.getTotalPages();
+        Page<CommentDTO> commentDTOS = myPageService.commentListTokenLogin(email, pageable);
+        setCommentInfo(commentDTOS, model);
 
-        int prevPage = recipeDTOS.getNumber();
-        int curPage = recipeDTOS.getNumber()+1;
-        int nextPage = recipeDTOS.getNumber()+2;
-        int lastPage = recipeDTOS.getTotalPages();
+        return "/member/mypageRecipe";
+    }
 
-         */
+    /*
+    //마이페이지 내 댓글 관리
+    @GetMapping("/member/mypage")
+    public String myCommentPage(@PageableDefault(page = 1) Pageable pageable, HttpSession session, Model model) throws Exception {
+        String email = (String) session.getAttribute("userEmail");
 
-        // 페이지 정보
-        int startPage = Math.max(1, recipeDTOS.getNumber() / 5 * 5 + 1);
-        int endPage = Math.min(startPage + 4, recipeDTOS.getTotalPages());
-        int prevPage = Math.max(1, recipeDTOS.getNumber() - 1);
-        int curPage = recipeDTOS.getNumber() + 1;
-        int nextPage = Math.min(recipeDTOS.getNumber() + 1, recipeDTOS.getTotalPages());
-        int lastPage = recipeDTOS.getTotalPages();
+        // 댓글 페이징 처리
+        Page<CommentDTO> commentDTOS = myPageService.commentListTokenLogin(email, pageable);
 
-        model.addAttribute("recipeDTOS", recipeDTOS);
-
-        model.addAttribute("startPage", startPage);
-        model.addAttribute("endPage", endPage);
-        model.addAttribute("prevPage", prevPage);
-        model.addAttribute("curPage", curPage);
-        model.addAttribute("nextPage", nextPage);
-        model.addAttribute("lastPage", lastPage);
-
+        // 페이징 정보 설정
+        setCommentInfo(commentDTOS, model);
 
         return "/member/mypage";
     }
+
+     */
 
     @GetMapping("/member/myrecipedetail") public String myrecipedetail(HttpSession session,
                                                                 int rid, Model model) throws Exception {
@@ -94,4 +84,45 @@ public class MyPageController {
 
         return "/member/myrecipedetail";
     }
+
+    // 페이지 정보 설정 메소드
+    private void setRecipeInfo(Page<RecipeDTO> recipeDTOS, Model model) {
+        int blockLimit = 5;
+        // 페이지 정보
+        int rstartPage = Math.max(1, recipeDTOS.getNumber() / 5 * 5 + 1);
+        int rendPage = Math.min(rstartPage + 4, recipeDTOS.getTotalPages());
+        int rprevPage = Math.max(1, recipeDTOS.getNumber() - 1);
+        int rcurPage = recipeDTOS.getNumber() + 1;
+        int rnextPage = Math.min(recipeDTOS.getNumber() + 1, recipeDTOS.getTotalPages());
+        int rlastPage = recipeDTOS.getTotalPages();
+
+        model.addAttribute("recipeDTOS", recipeDTOS);
+        model.addAttribute("rstartPage", rstartPage);
+        model.addAttribute("rendPage", rendPage);
+        model.addAttribute("rprevPage", rprevPage);
+        model.addAttribute("rcurPage", rcurPage);
+        model.addAttribute("rnextPage", rnextPage);
+        model.addAttribute("rlastPage", rlastPage);
+    }
+
+    private void setCommentInfo(Page<CommentDTO> commentDTOS, Model model) {
+
+        int cstartPage = Math.max(1, commentDTOS.getNumber() / 5 * 5 + 1);
+        int cendPage = Math.min(cstartPage + 4, commentDTOS.getTotalPages());
+        int cprevPage = Math.max(1, commentDTOS.getNumber() - 1);
+        int ccurPage = commentDTOS.getNumber() + 1;
+        int cnextPage = Math.min(commentDTOS.getNumber() + 1, commentDTOS.getTotalPages());
+        int clastPage = commentDTOS.getTotalPages();
+
+        model.addAttribute("commentDTOS", commentDTOS);
+        model.addAttribute("cstartPage", cstartPage);
+        model.addAttribute("cendPage", cendPage);
+        model.addAttribute("cprevPage", cprevPage);
+        model.addAttribute("ccurPage", ccurPage);
+        model.addAttribute("cnextPage", cnextPage);
+        model.addAttribute("clastPage", clastPage);
+
+    }
+
+
 }

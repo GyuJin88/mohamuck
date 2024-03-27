@@ -1,6 +1,7 @@
 package com.example.enlaco.Entity;
 
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
@@ -27,7 +28,7 @@ public class RecipeEntity extends BaseEntity {
     @Column(name = "rmenu")
     private String  rmenu;      //메뉴명
     @Lob
-    @Column(name = "rcontent", length = 5000)
+    @Column(name = "rcontent", length = 8000)
     private String  rcontent;   //내용
     @Column(name = "rwriter", length = 20)
     private String  rwriter;    //작성자
@@ -39,8 +40,9 @@ public class RecipeEntity extends BaseEntity {
     private String  rselect;    //식재료 선택
     @Column(name = "rviewcnt")
     private Integer rviewcnt;   //조회수
-    @Column(name = "rgoodcnt")
-    private Integer rgoodcnt;   //좋아요 수
+
+    @Column(name = "rgoodcnt", nullable = false)
+    private Integer rgoodcnt;   // 좋아요 수
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mid")
@@ -50,6 +52,9 @@ public class RecipeEntity extends BaseEntity {
     @JoinColumn(name = "userid")
     private UsersEntity usersEntity;              //api 로그인
 
+    public void setRgoodcnt(Integer rgoodcnt) {
+        this.rgoodcnt = rgoodcnt != null ? rgoodcnt : 0;
+    }
 
 
 }

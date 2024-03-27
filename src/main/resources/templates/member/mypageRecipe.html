@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout}">
+<head>
+    <title>Bootstrap Example</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+<div layout:fragment="content">
+<div class="row">
+    <div class="col-1 col-lg-3"></div>
+    <div class="col-10 col-lg-6">
+        <div style="margin-top: 10px; margin-bottom: 10px; font-size: xx-large; margin-left: 20px">마이페이지</div>
+        <div class="text-lg-end">
+            <button type="button" th:if="${session.mnickname}" class="btn text-white" id="btn1" onclick="location.href='/member/modify'">내정보 보기</button>
+        </div>
+
+        <div id="recipeSection"> <!-- 레시피 관리 -->
+            <div style="margin-top: 10px; margin-bottom: 10px; font-size: x-large; margin-left: 20px">내가 쓴 레시피</div>
+                <div class="container mt-3" id="recipeContent">
+                    <table class="table">
+                        <thead class="table-info">
+                        <tr>
+                            <th>제목</th>
+                            <th>작성일</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr style="cursor: pointer" th:each="data:${recipeDTOS}" th:onclick="|location.href='/member/myrecipedetail?rid=${data.rid}&userid=${data.userid}'|">
+                            <td th:text="${data.rmenu}">김치찌개 레시피</td>
+                            <td th:text="${#temporals.format(data.regDate,'yyyy-MM-dd')}">2023-11-17</td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+            <ul class="pagination justify-content-center" id="recipePagination" style="margin:20px 0">
+                <li class="page-item" th:if="${rstartPage != 1}">
+                    <a class="page-link" th:href="@{/member/mypage(page=1)}">first</a>
+                </li>
+                <li class="page-item" th:if="${rcurPage != 1}">
+                    <a class="page-link" th:href="@{/member/mypage(page=${rprevPage})}">prev</a>
+                </li>
+
+                <span th:each="page:${#numbers.sequence(rstartPage, rendPage)}">
+                    <li class="page-item" th:if="${page != rcurPage}">  <!--현재 페이지가 아니면-->
+                        <a class="page-link" th:href="@{/member/mypage(page=${page})}" >[[${page}]]</a>
+                    </li>
+                    <li class="page-item active" th:if="${page == rcurPage}">  <!--현재 페이지 이면-->
+                        <a class="page-link" style="background-color: #f7931e" href="#">[[${page}]]</a>
+                    </li>
+                </span>
+
+                <li class="page-item" th:if="${rcurPage != rlastPage}">
+                    <a class="page-link" th:href="@{/member/mypage(page=${rnextPage})}">next</a>
+                </li>
+                <li class="page-item" th:if="${rendPage != rlastPage}">
+                    <a class="page-link" th:href="@{/member/mypage(page=${rlastPage})}">last</a>
+                </li>
+            </ul>
+        </div><br><br>
+        <div id="commentSection"> <!-- 댓글 관리 -->
+            <div style="margin-top: 10px; margin-bottom: 10px; font-size: x-large; margin-left: 20px">내가 쓴 댓글</div>
+                <div class="container mt-3" id="commentContent">
+                    <table class="table table-striped">
+                        <colgroup>
+                            <col width=50%>
+                            <col width=15%>
+                            <col width=25%>
+                            <col width=10%>
+                        </colgroup>
+                        <thead class="table-success">
+                        <tr>
+                            <th>내용</th>
+                            <th>날짜</th>
+                            <th>본문</th>
+                            <th>삭제</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr style="cursor: pointer" th:each="data:${commentDTOS}" >
+                            <td th:text="${data.cbody}">맛있어요</td>
+                            <td th:text="${#temporals.format(data.regDate, 'yyyy-MM-dd')}">2024-02-01</td>
+                            <td th:text="${data.recipeid}">부대찌개</td>
+                            <td th:onclick="|location.href='@{/comment/remove(no=${recipeDTO.rid}, id=${data.cid})}'|">삭제</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            <ul class="pagination justify-content-center"  id="commentPagination" style="margin:20px 0">
+                <li class="page-item" th:if="${cstartPage != 1}">
+                    <a class="page-link" th:href="@{/member/mypage(page=1)}">first</a>
+                </li>
+                <li class="page-item" th:if="${ccurPage != 1}">
+                    <a class="page-link" th:href="@{/member/mypage(page=${cprevPage})}">prev</a>
+                </li>
+
+                <span th:each="page:${#numbers.sequence(cstartPage, cendPage)}">
+                                <li class="page-item" th:if="${page != ccurPage}">  <!--현재 페이지가 아니면-->
+                                    <a class="page-link" th:href="@{/member/mypage(page=${page})}" >[[${page}]]</a>
+                                </li>
+                                <li class="page-item active" th:if="${page == ccurPage}">  <!--현재 페이지 이면-->
+                                    <a class="page-link" style="background-color: #f7931e" href="#">[[${page}]]</a>
+                                </li>
+                            </span>
+
+                <li class="page-item" th:if="${ccurPage != clastPage}">
+                    <a class="page-link" th:href="@{/member/mypage(page=${cnextPage})}">next</a>
+                </li>
+                <li class="page-item" th:if="${cendPage != clastPage}">
+                    <a class="page-link" th:href="@{/member/mypage(page=${clastPage})}">last</a>
+                </li>
+            </ul>
+        </div>
+    <div class="col-1 col-lg-3"></div>
+
+</div>
+</div>
+</div>
+
+
+</body>
+</html>

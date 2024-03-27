@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -56,7 +57,7 @@ public class RecipeController {
             writer = "";
         } else {
             writer = principal.getName();
-        }
+        }a
          */
         String email = (String) session.getAttribute("userEmail");
         if (memberService.getUserByEmail(email) != null) {
@@ -66,7 +67,7 @@ public class RecipeController {
         }
 
         recipeService.viewcnt(rid);
-
+        recipeService.rgoodcnt(rid);
 
         RecipeDTO recipeDTO = recipeService.detail(rid);
 
@@ -74,6 +75,7 @@ public class RecipeController {
 
         model.addAttribute("recipeDTO", recipeDTO);
         model.addAttribute("commentDTOS", commentDTOS);
+
 
 
         //S3 이미지정보전달
@@ -294,4 +296,13 @@ public class RecipeController {
     }
 
      */
+
+    @GetMapping("/rgoodcnt")
+    public String recipeRgoodcnt(int rid, RedirectAttributes redirectAttributes) throws Exception {
+        recipeService.rgoodcnt(rid);
+
+        redirectAttributes.addAttribute("rid", rid);
+
+        return "redirect:/recipe/detail";
+    }
 }

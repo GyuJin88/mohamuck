@@ -24,8 +24,8 @@ public interface RecipeRepository extends JpaRepository<RecipeEntity, Integer> {
 
     //좋아요
     @Modifying
-    @Query(value = "UPDATE RecipeEntity u SET u.rgoodcnt=u.rgoodcnt+1 WHERE u.rid=:rid")
-    public void rgoodcnt(int rid);
+    @Query(value = "UPDATE RecipeEntity r SET r.rgoodcnt=r.rgoodcnt+1 WHERE r.rid=:rid")
+    public void rgoodcnt(@Param("rid") int rid);
 
     //제목, 내용, 식재료로 검색
     /*@Query("SELECT u FROM GuestbookEntity u WHERE u.title like %:keyword% or u.content like %:keyword% or u.writer like %:keyword%")*/

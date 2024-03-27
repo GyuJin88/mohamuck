@@ -1,6 +1,7 @@
 package com.example.enlaco.Entity;
 
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
@@ -26,6 +27,12 @@ public class CommentEntity extends BaseEntity {
     private String  cbody;      //댓글 내용
     @Column(name = "cwriter", length = 20)
     private String  cwriter;    //작성자
+    /*
+    @ColumnDefault("0")
+    @Column(name = "rgoodcnt")//레시피 좋아요
+    private Integer rgoodcnt;
+
+     */
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipeid")

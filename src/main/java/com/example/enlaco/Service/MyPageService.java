@@ -1,6 +1,8 @@
 package com.example.enlaco.Service;
 
+import com.example.enlaco.DTO.CommentDTO;
 import com.example.enlaco.DTO.RecipeDTO;
+import com.example.enlaco.Entity.CommentEntity;
 import com.example.enlaco.Entity.RecipeEntity;
 import com.example.enlaco.Repository.CommentRepository;
 import com.example.enlaco.Repository.MemberRepository;
@@ -41,7 +43,7 @@ public class MyPageService {
 
 
     //레시피 전체조회
-    public Page<RecipeDTO> listTokenLogin(String email, Pageable pageable) throws Exception {
+    public Page<RecipeDTO> recieListTokenLogin(String email, Pageable pageable) throws Exception {
 
         int curPage = pageable.getPageNumber()-1;
         int pageLimit = 5;
@@ -73,18 +75,27 @@ public class MyPageService {
 
     }
 
-    /*
-    public List<RecipeDTO> listTokenLoginMypage(String email) throws Exception {
-        List<RecipeEntity> recipeUserid = recipeRepository.findByUseridOnRecipe(email);
+    public Page<CommentDTO> commentListTokenLogin(String email, Pageable pageable) throws Exception {
 
-        List<RecipeDTO> recipeDTOS = new ArrayList<>();
-        recipeDTOS.addAll(Arrays.asList(modelMapper.map(recipeUserid, RecipeDTO[].class)));
-        return recipeDTOS;
+        int curPage = pageable.getPageNumber()-1;
+        int pageLimit = 5;
+
+        Pageable newPage = PageRequest.of(curPage, pageLimit,
+                Sort.by(Sort.Direction.DESC, "cid"));
+
+        Page<CommentEntity> commentUserid = commentRepository.findByCwriterUserid(email, newPage);
+
+        Page<CommentDTO> commentDTOS = commentUserid.map(data -> CommentDTO.builder()
+                .cid(data.getCid())
+                .regDate(data.getRegDate())
+                .cbody(data.getCbody())
+                .cwriter(data.getCwriter())
+                .recipeid(data.getRecipeEntity().getRid())
+                .build());
+
+        return commentDTOS;
+
     }
-
-     */
-
-
 
 
 
