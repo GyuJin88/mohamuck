@@ -102,6 +102,7 @@
         </div>
         <div class="col-lg-3 col-sm-5">
     <button type="button" id="yolo" class="btn text-white fw-bold float-end mt-3" th:onclick="|location.href='@{/recipe/recom}'|">레시피 추천</button>
+
     </div>
     <div id="flex" >
         <div class="image-container" th:each="data:${storageDTOS}">
@@ -119,11 +120,14 @@
             <div class="material-name"><!--식재료 이름 칸-->
                 <div style="text-align: center; font-weight: bold; color: white" th:text="${data.singre}">김치</div>
             </div>
+
         </div>
+
 
     </div>
 </div>
 </div>
 </div>
+
 </body>
 </html>

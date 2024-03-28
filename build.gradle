@@ -60,6 +60,14 @@ dependencies {
     implementation 'org.modelmapper:modelmapper:3.1.0'
     //나중에 썸네일 자동 등록 같은 것도 추가 등록 해주기
 
+    // https://mvnrepository.com/artifact/jakarta.servlet.jsp/jakarta.servlet.jsp-api
+    compileOnly group: 'jakarta.servlet.jsp', name: 'jakarta.servlet.jsp-api', version: '3.1.1'
+
+    //jsp
+    implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
+    implementation 'javax.servlet:jstl'
+
+
     //S3 적용
     compileOnly 'org.springframework.cloud:spring-cloud-starter-aws:2.0.1.RELEASE'
     //flask 서버를 위한 외부 라이브러리

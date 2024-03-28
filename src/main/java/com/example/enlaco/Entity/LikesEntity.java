@@ -9,6 +9,7 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @ToString
+
 @Table(name = "likes")
 @SequenceGenerator(
         name = "likes_SEQ",
@@ -26,7 +27,7 @@ public class LikesEntity {
     @JoinColumn(name = "userid")
     private UsersEntity users;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rid")
     private RecipeEntity recipe;
 
